@@ -15,9 +15,9 @@ import * as Yup from 'yup';
 interface LoginViewProps {
   isRegister: boolean;
   handleToggleMode: () => void;
-  onLogin: (login: string) => void;
+  onLogin: (data: { login: string; password: string }) => void;
   onRegister: (data: { username: string; email: string; password: string }) => void;
-  onGoogleLogin: (googleToken: string) => void;
+  onGoogleLogin: (googleToken: string, googleUserName?: string) => void;
 }
 
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
@@ -26,7 +26,7 @@ const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onL
   const formik = useFormik({
     initialValues: isRegister
       ? { email: '', username: '', password: '', confirmPassword: '' }
-      : { login: '' },
+      : { login: '', password: '' },
     enableReinitialize: true,
     validationSchema: isRegister
       ? Yup.object({
@@ -36,18 +36,19 @@ const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onL
             .matches(passwordRegex, 'Min 8 chars, letter, number, special')
             .required('Required'),
           confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password')], 'Passwords must match')
+            .oneOf([Yup.ref('password')], 'Senhas diferentes')
             .required('Required'),
         })
       : Yup.object({
           login: Yup.string().required('Required'),
+          password: Yup.string().required('Required'),
         }),
     onSubmit: (values) => {
       if (isRegister) {
         const { confirmPassword, ...registerData } = values as any;
         onRegister(registerData as { username: string; email: string; password: string });
       } else {
-        onLogin((values as { login: string }).login);
+        onLogin(values as { login: string; password: string });
       }
     },
   });

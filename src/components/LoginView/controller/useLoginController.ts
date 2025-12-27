@@ -2,7 +2,15 @@
 import { useState } from 'react';
 import { loginUser, registerUser } from '../../../services/api';
 
-export function useLoginController(onLogin: (login: string) => void) {
+export function useLoginController(
+  onLogin: (login: string, password?: string) => void,
+  onGoogleLogin?: (googleToken: string, googleUserName?: string) => void
+) {
+  const handleGoogleLogin = async (googleToken: string, googleUserName?: string) => {
+    if (onGoogleLogin) {
+      await onGoogleLogin(googleToken, googleUserName);
+    }
+  };
   const [isRegister, setIsRegister] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
   const [registerError, setRegisterError] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
@@ -10,14 +18,22 @@ export function useLoginController(onLogin: (login: string) => void) {
   const handleToggleMode = () => {
     setIsRegister((prev) => !prev);
   };
-
-  // login: string pode ser email ou username, ajuste conforme seu form
-  const handleLogin = async (login: string) => {
+  const handleLogin = async (data: { login: string; password: string }) => {
     try {
-      // Aqui assumimos que login é o email, ajuste se necessário
-      const response = await loginUser({ email: login, password: login }); // Troque para senha correta
-      // Salve o token, se necessário: localStorage.setItem('token', response.data.key)
-      onLogin(login);
+      const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.login);
+      const payload = isEmail
+        ? { email: data.login, password: data.password }
+        : { username: data.login, password: data.password };
+      const response = await loginUser(payload);
+      console.log('Resposta do login:', response.data);
+      if (response?.data?.token) {
+        localStorage.setItem('token', response.data.token);
+      } else if (response?.data?.access) {
+        localStorage.setItem('token', response.data.access);
+      } else if (response?.data?.key) {
+        localStorage.setItem('token', response.data.key);
+      }
+      onLogin(data.login, data.password);
     } catch (error: any) {
       alert('Erro ao fazer login. Verifique suas credenciais.');
     }
@@ -52,6 +68,7 @@ export function useLoginController(onLogin: (login: string) => void) {
     handleToggleMode,
     handleLogin,
     handleRegister,
+    handleGoogleLogin,
     registerSuccess,
     handleCloseSuccess,
     registerError,

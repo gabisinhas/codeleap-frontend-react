@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { usePaginatedPosts } from '../../hooks/usePaginatedPosts';
 
 export default function PostsWithSearch() {

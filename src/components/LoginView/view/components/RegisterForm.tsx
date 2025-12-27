@@ -27,7 +27,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ formik }) => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.email && Boolean(formik.errors.email)}
-        helperText={formik.touched.email && formik.errors.email}
+        helperText={formik.touched.email && typeof formik.errors.email === 'string' ? formik.errors.email : ''}
         sx={{ mb: 1 }}
       />
       <TextField
@@ -39,7 +39,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ formik }) => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.username && Boolean(formik.errors.username)}
-        helperText={formik.touched.username && formik.errors.username}
+        helperText={formik.touched.username && typeof formik.errors.username === 'string' ? formik.errors.username : ''}
         sx={{ mb: 1 }}
       />
       <TextField
@@ -52,7 +52,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ formik }) => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.password && Boolean(formik.errors.password)}
-        helperText={formik.touched.password && formik.errors.password}
+        helperText={formik.touched.password && typeof formik.errors.password === 'string' ? formik.errors.password : ''}
         sx={{ mb: 1 }}
         InputProps={{
           endAdornment: (
@@ -79,7 +79,7 @@ const RegisterForm: React.FC<RegisterFormProps> = ({ formik }) => {
         onChange={formik.handleChange}
         onBlur={formik.handleBlur}
         error={formik.touched.confirmPassword && Boolean(formik.errors.confirmPassword)}
-        helperText={formik.touched.confirmPassword && formik.errors.confirmPassword}
+        helperText={formik.touched.confirmPassword && typeof formik.errors.confirmPassword === 'string' ? formik.errors.confirmPassword : ''}
         sx={{ mb: 1 }}
         InputProps={{
           endAdornment: (

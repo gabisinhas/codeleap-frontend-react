@@ -5,7 +5,6 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
-import Header from '../Header/Header';
 import PostForm from '../PostCardCreation/PostForm';
 import PostCardList from '../PostCardList/PostCardList';
 import { useSortedPosts } from '../../hooks/useSortedPosts';
@@ -20,18 +19,20 @@ interface MainPageProps {
   onDelete: (id: number) => void;
 }
 
+
 const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => {
   const [sortOrder, setSortOrder] = useState<SortOrder>('newest');
   const [pageSize, setPageSize] = useState(10);
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
+  const [refresh, setRefresh] = useState(0);
 
   const {
     posts,
     loading,
     error,
     totalCount
-  } = usePaginatedPosts<Post>(search, pageSize, page);
+  } = usePaginatedPosts(search, pageSize, page, refresh);
   const sortedPosts = useSortedPosts(posts, sortOrder);
   const totalPages = Math.ceil((totalCount || 0) / pageSize);
 
@@ -39,54 +40,76 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
     setPage(0);
   }, [pageSize]);
 
+
+  const handleCreate = (post: any) => {
+    setRefresh(r => r + 1);
+    if (onCreate) onCreate(post);
+  };
+
   return (
-    <Box maxWidth={700} mx="auto" my={5}>
-      <Paper elevation={3} sx={{ borderRadius: 2, overflow: 'hidden' }}>
-        <Header />
-        <Box p={3}>
+    <Box maxWidth={700} mx="auto" mt={3} mb={2}>
+      <Paper elevation={3} sx={{ borderRadius: 2, overflow: 'hidden', mt: 0 }}>
+        <img
+          src="/banner.png"
+          alt="Blog Banner"
+          style={{
+            width: '100%',
+            maxHeight: 250,
+            objectFit: 'cover',
+            borderRadius: '0 0 8px 8px',
+          }}
+        />
+        <Box p={2} pt={2}>
           <Box display="flex" flexDirection="column" gap={3}>
-            <PostForm currentUser={username} onCreate={onCreate} />
+            <PostForm currentUser={username} onCreate={handleCreate} />
             {totalCount > 0 && (
-              <Box display="flex" alignItems="center" gap={2} mb={1}>
-                <input
-                  type="text"
-                  placeholder="Search posts..."
-                  value={search}
-                  onChange={e => setSearch(e.target.value)}
-                  style={{ padding: 8, borderRadius: 4, border: '1px solid #ccc', flex: 1, maxWidth: 220 }}
-                  aria-label="Search posts"
-                />
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel id="page-size-label">Posts per page</InputLabel>
-                  <Select
-                    labelId="page-size-label"
-                    value={pageSize}
-                    label="Posts per page"
-                    onChange={e => setPageSize(Number(e.target.value))}
-                  >
-                    <MenuItem value={10}>10</MenuItem>
-                    <MenuItem value={20}>20</MenuItem>
-                    <MenuItem value={30}>30</MenuItem>
-                    <MenuItem value={40}>40</MenuItem>
-                    <MenuItem value={50}>50</MenuItem>
-                  </Select>
-                </FormControl>
-                <FormControl size="small" sx={{ minWidth: 120 }}>
-                  <InputLabel id="sort-label">Sort by</InputLabel>
-                  <Select
-                    labelId="sort-label"
-                    value={sortOrder}
-                    label="Sort by"
-                    onChange={e => setSortOrder(e.target.value as SortOrder)}
-                  >
-                    <MenuItem value="newest">Newest</MenuItem>
-                    <MenuItem value="oldest">Oldest</MenuItem>
-                  </Select>
-                </FormControl>
+              <Box display="flex" justifyContent="center" mb={1}>
+                <Box display="flex" alignItems="center" gap={2} maxWidth={600} width="100%" justifyContent="center">
+                  <input
+                    type="text"
+                    placeholder="Search posts..."
+                    value={search}
+                    onChange={e => setSearch(e.target.value)}
+                    style={{ padding: 8, borderRadius: 4, border: '1px solid #ccc', flex: 1, maxWidth: 220 }}
+                    aria-label="Search posts"
+                  />
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel id="page-size-label">Posts per page</InputLabel>
+                    <Select
+                      labelId="page-size-label"
+                      value={pageSize}
+                      label="Posts per page"
+                      onChange={e => setPageSize(Number(e.target.value))}
+                    >
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                      <MenuItem value={30}>30</MenuItem>
+                      <MenuItem value={40}>40</MenuItem>
+                      <MenuItem value={50}>50</MenuItem>
+                    </Select>
+                  </FormControl>
+                  <FormControl size="small" sx={{ minWidth: 120 }}>
+                    <InputLabel id="sort-label">Sort by</InputLabel>
+                    <Select
+                      labelId="sort-label"
+                      value={sortOrder}
+                      label="Sort by"
+                      onChange={e => setSortOrder(e.target.value as SortOrder)}
+                    >
+                      <MenuItem value="newest">Newest</MenuItem>
+                      <MenuItem value="oldest">Oldest</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Box>
               </Box>
             )}
             <Box>
-              <PostCardList posts={sortedPosts} currentUser={username} onDelete={onDelete} />
+              <PostCardList
+                posts={sortedPosts}
+                currentUser={username}
+                onDelete={onDelete}
+                onEdit={() => setRefresh(r => r + 1)}
+              />
               {loading && (
                 <Box display="flex" justifyContent="center" my={2}>
                   <div className="loader" style={{ width: 40, height: 40, border: '4px solid #ccc', borderTop: '4px solid #7695EC', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />

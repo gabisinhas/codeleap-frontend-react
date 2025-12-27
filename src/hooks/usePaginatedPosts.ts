@@ -1,13 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useSearchFilter } from './useSearchFilter';
-
-const MOCK_POSTS = Array.from({ length: 50 }, (_, i) => ({
-  id: i + 1,
-  title: `Mock Post Title ${i + 1}`,
-  content: `This is the content for mock post #${i + 1}.`,
-  username: `user${(i % 5) + 1}`,
-  createdAt: new Date(Date.now() - i * 1000 * 60 * 10).toISOString(),
-}));
+import { fetchPosts } from '../services/api';
 
 export interface PaginatedPost<T> {
   results: T[];
@@ -23,42 +15,51 @@ export interface Post {
   createdAt: string;
 }
 
-export function usePaginatedPosts(searchText: string = '', pageSize = 10, page = 0) {
+export function usePaginatedPosts(searchText: string = '', pageSize = 10, page = 0, refresh = 0) {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState<number>(MOCK_POSTS.length);
+  const [totalCount, setTotalCount] = useState<number>(0);
 
   useEffect(() => {
     let isMounted = true;
     setLoading(true);
     setError(null);
-    
-    setTimeout(() => {
-      if (!isMounted) return;
-      
-      let filtered = MOCK_POSTS as Post[];
-      if (searchText) {
-        const lower = searchText.toLowerCase();
-        filtered = filtered.filter(post => {
-          const username = post.username ? post.username.toLowerCase() : '';
-          // Allow search for @username or username
-          const usernameVariants = [username, `@${username}`];
-          return (
-            (post.title && post.title.toLowerCase().includes(lower)) ||
-            (post.content && post.content.toLowerCase().includes(lower)) ||
-            usernameVariants.some(variant => variant.includes(lower))
-          );
-        });
-      }
-      const start = page * pageSize;
-      const end = start + pageSize;
-      setPosts(filtered.slice(start, end));
-      setTotalCount(filtered.length);
-      setLoading(false);
-    }, 400);
+    fetchPosts()
+      .then((response) => {
+        if (!isMounted) return;
+        let data = response.data;
+
+        let results: Post[] = (data.results || data).map((post: any) => ({
+          ...post,
+          createdAt: post.created_datetime,
+        }));
+
+        if (searchText) {
+          const lower = searchText.toLowerCase();
+          results = results.filter(post => {
+            const username = post.username ? post.username.toLowerCase() : '';
+            const usernameVariants = [username, `@${username}`];
+            return (
+              (post.title && post.title.toLowerCase().includes(lower)) ||
+              (post.content && post.content.toLowerCase().includes(lower)) ||
+              usernameVariants.some(variant => variant.includes(lower))
+            );
+          });
+        }
+        const start = page * pageSize;
+        const end = start + pageSize;
+        setPosts(results.slice(start, end));
+        setTotalCount(results.length);
+        setLoading(false);
+      })
+      .catch(() => {
+        if (!isMounted) return;
+        setError('Failed to fetch posts');
+        setLoading(false);
+      });
     return () => { isMounted = false; };
-  }, [page, pageSize, searchText]);
+  }, [page, pageSize, searchText, refresh]);
 
   return { posts, loading, error, totalCount };
 }

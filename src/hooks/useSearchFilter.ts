@@ -1,6 +1,6 @@
 import { useState, useMemo } from 'react';
 
-// ...existing code...
+
 export function useSearchFilter<T>(items: T[], getText: (item: T) => string) {
   const [search, setSearch] = useState('');
 

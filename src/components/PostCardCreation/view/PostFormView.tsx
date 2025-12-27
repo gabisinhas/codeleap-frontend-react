@@ -20,32 +20,30 @@ const PostFormView: React.FC<PostFormViewProps> = ({
   content,
   setContent,
   handleSubmit,
-  currentUser,
-  onCreate,
 }) => (
   <Paper
     sx={{
-      p: { xs: 2, sm: 4 },
-      mb: 3,
-      maxWidth: 500,
+      p: { xs: 0.5, sm: 1 },
+      mb: 1,
+      maxWidth: 600,
       width: '100%',
       mx: 'auto',
-      my: { xs: 2, md: 6 },
-      boxShadow: 3,
+      my: { xs: 0.5, md: 1 },
+      boxShadow: 1,
       borderRadius: 3,
       background: '#fff',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
     }}
-    elevation={4}
+    elevation={2}
     role="form"
     aria-label="Create a new post"
   >
     <Typography
       variant="h6"
       fontWeight={700}
-      mb={3}
+      mb={1.5}
       textAlign="center"
       color="#333"
       sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
@@ -57,10 +55,10 @@ const PostFormView: React.FC<PostFormViewProps> = ({
       onSubmit={handleSubmit}
       display="flex"
       flexDirection="column"
-      gap={2.5}
+      gap={1.5}
       alignItems="stretch"
       width="100%"
-      maxWidth={400}
+      maxWidth={520}
     >
       <Typography fontWeight={700} mb={0.5} fontSize={16} color="#333">
         Title
@@ -69,13 +67,13 @@ const PostFormView: React.FC<PostFormViewProps> = ({
         placeholder="Hello world"
         value={title}
         onChange={e => setTitle(e.target.value)}
-        size="medium"
+        size="small"
         fullWidth
         inputProps={{ maxLength: 100, 'aria-label': 'Post title' }}
         helperText={`${title.length}/100 characters`}
         FormHelperTextProps={{ sx: { textAlign: 'right', color: '#888' } }}
         required
-        sx={{ mb: 2 }}
+        sx={{ mb: 1 }}
       />
       <Typography fontWeight={700} mb={0.5} fontSize={16} color="#333">
         Content
@@ -84,9 +82,9 @@ const PostFormView: React.FC<PostFormViewProps> = ({
         placeholder="Content here"
         value={content}
         onChange={e => setContent(e.target.value)}
-        size="medium"
+        size="small"
         multiline
-        minRows={4}
+        minRows={1}
         fullWidth
         inputProps={{ maxLength: 500, 'aria-label': 'Post content' }}
         helperText={`${content.length}/500 characters`}
@@ -100,15 +98,15 @@ const PostFormView: React.FC<PostFormViewProps> = ({
           disabled={!title.trim() || !content.trim()}
           sx={{
             fontWeight: 700,
-            px: 6,
-            py: 1.5,
-            fontSize: '1rem',
+            px: 4,
+            py: 1,
+            fontSize: '0.95rem',
             borderRadius: 2,
-            mt: 2,
-            boxShadow: 2,
+            mt: 1,
+            boxShadow: 1,
             transition: 'box-shadow 0.2s',
             ':hover': {
-              boxShadow: 4,
+              boxShadow: 2,
             },
           }}
           aria-label="Create post"

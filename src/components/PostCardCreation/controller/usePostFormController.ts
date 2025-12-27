@@ -1,9 +1,12 @@
 
 import { useState } from 'react';
-import type { PostFormProps } from '../types/PostForm.types';
 import { createPost } from '../../../services/api';
 
-export const usePostFormController = (currentUser: string, onCreate: PostFormProps['onCreate']) => {
+
+export const usePostFormController = (
+  currentUser: string,
+  onCreate: (post: any, error?: string) => void
+) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,11 +20,17 @@ export const usePostFormController = (currentUser: string, onCreate: PostFormPro
     try {
       const postData = { title: title.trim(), content: content.trim(), username: currentUser };
       await createPost(postData);
-      onCreate(postData);
+      if (onCreate) {
+        onCreate(postData);
+      }
       setTitle('');
       setContent('');
-    } catch (err) {
-      setError('Erro ao criar post.');
+    } catch (err: any) {
+      const msg = err?.response?.data?.detail || 'Erro ao criar post.';
+      setError(msg);
+      if (onCreate) {
+        onCreate(null, msg);
+      }
       console.error(err);
     } finally {
       setLoading(false);

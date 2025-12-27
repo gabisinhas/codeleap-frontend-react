@@ -3,8 +3,9 @@ import React from 'react';
 import { useLoginController } from './controller/useLoginController';
 import LoginView from './view/LoginView';
 import type { LoginProps } from './types/Login.types';
-import SuccessSnackbar from './view/components/SuccessSnackbar';
-import ErrorSnackbar from './view/components/ErrorSnackbar';
+import SuccessSnackbar from '../../utils/SuccessSnackbar';
+import ErrorSnackbar from '../../utils/ErrorSnackbar';
+
 
 const Login: React.FC<LoginProps> = ({ onLogin, onGoogleLogin }) => {
   const {
@@ -12,11 +13,12 @@ const Login: React.FC<LoginProps> = ({ onLogin, onGoogleLogin }) => {
     handleToggleMode,
     handleLogin,
     handleRegister,
+    handleGoogleLogin,
     registerSuccess,
     handleCloseSuccess,
     registerError,
     handleCloseError
-  } = useLoginController(onLogin);
+  } = useLoginController(onLogin, onGoogleLogin);
   return (
     <>
       <LoginView
@@ -24,9 +26,9 @@ const Login: React.FC<LoginProps> = ({ onLogin, onGoogleLogin }) => {
         handleToggleMode={handleToggleMode}
         onLogin={handleLogin}
         onRegister={handleRegister}
-        onGoogleLogin={onGoogleLogin}
+        onGoogleLogin={handleGoogleLogin}
       />
-      <SuccessSnackbar open={registerSuccess} onClose={handleCloseSuccess} />
+      <SuccessSnackbar open={registerSuccess} onClose={handleCloseSuccess} message="Registered created successfully!" />
       <ErrorSnackbar open={registerError.open} onClose={handleCloseError} message={registerError.message} />
     </>
   );

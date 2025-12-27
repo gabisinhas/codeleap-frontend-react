@@ -1,0 +1,5 @@
+# Vercel configuration for React + Vite
+
+[build]
+  command = "npm run build"
+  publish = "dist"
