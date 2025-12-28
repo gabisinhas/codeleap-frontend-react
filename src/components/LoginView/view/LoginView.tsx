@@ -2,7 +2,7 @@
 import React from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-
+import CircularProgress from '@mui/material/CircularProgress';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import LoginForm from './components/LoginForm';
@@ -18,11 +18,12 @@ interface LoginViewProps {
   onLogin: (data: { login: string; password: string }) => void;
   onRegister: (data: { username: string; email: string; password: string }) => void;
   onGoogleLogin: (googleToken: string, googleUserName?: string) => void;
+  isLoading?: boolean;
 }
 
 const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/;
 
-const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onLogin, onRegister, onGoogleLogin }) => {
+const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onLogin, onRegister, onGoogleLogin, isLoading }) => {
   const formik = useFormik({
     initialValues: isRegister
       ? { email: '', username: '', password: '', confirmPassword: '' }
@@ -90,14 +91,35 @@ const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onL
         <Button
           variant="contained"
           type="submit"
-          disabled={!formik.isValid || !formik.dirty}
-          sx={{ alignSelf: 'flex-end', mt: 1, fontWeight: 700, px: 4 }}
+          disabled={!formik.isValid || !formik.dirty || isLoading}
+          sx={{ 
+            alignSelf: 'flex-end', 
+            mt: 1, 
+            fontWeight: 700, 
+            px: 4,
+            position: 'relative'
+          }}
         >
-          {isRegister ? 'REGISTER' : 'ENTER'}
+          {isLoading && (
+            <CircularProgress
+              size={20}
+              sx={{
+                position: 'absolute',
+                left: '50%',
+                top: '50%',
+                marginLeft: '-10px',
+                marginTop: '-10px',
+                color: 'white'
+              }}
+            />
+          )}
+          <span style={{ opacity: isLoading ? 0 : 1 }}>
+            {isRegister ? 'REGISTER' : 'ENTER'}
+          </span>
         </Button>
         <ToggleModeButton isRegister={isRegister} handleToggleMode={handleToggleMode} />
         <Box sx={{ mt: 2, alignSelf: 'center' }}>
-          <GoogleLoginButton onGoogleLogin={onGoogleLogin} />
+          <GoogleLoginButton onGoogleLogin={onGoogleLogin} isLoading={isLoading} />
         </Box>
       </Paper>
     </Box>

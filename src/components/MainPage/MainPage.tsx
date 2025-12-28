@@ -5,6 +5,8 @@ import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
 import PostForm from '../PostCardCreation/PostForm';
 import PostCardList from '../PostCardList/PostCardList';
 import { useSortedPosts } from '../../hooks/useSortedPosts';
@@ -38,16 +40,25 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
     error,
     totalCount
   } = usePaginatedPosts(search, pageSize, page, refresh);
+  
   const sortedPosts = useSortedPosts(posts, sortOrder);
   const totalPages = Math.ceil((totalCount || 0) / pageSize);
+
+
 
   React.useEffect(() => {
     setPage(0);
   }, [pageSize]);
 
+
   const handleDelete = (id: number) => {
     setRefresh(r => r + 1);
     if (onDelete) onDelete(id);
+  };
+
+  const handleCreate = (post: Omit<Post, 'id' | 'createdAt'>) => {
+    setRefresh(r => r + 1);
+    if (onCreate) onCreate(post);
   };
 
   const handleDeleteSuccess = (_message: string) => {
@@ -57,11 +68,6 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
   const handleDeleteError = (message: string) => {
     setDeleteErrorMsg(message);
     setDeleteErrorOpen(true);
-  };
-
-  const handleCreate = (post: any) => {
-    setRefresh(r => r + 1);
-    if (onCreate) onCreate(post);
   };
 
   return (
@@ -122,42 +128,90 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
               </Box>
             )}
             <Box>
-              <PostCardList
-                posts={sortedPosts}
-                currentUser={username}
-                onDelete={handleDelete}
-                onEdit={() => setRefresh(r => r + 1)}
-                onDeleteSuccess={handleDeleteSuccess}
-                onDeleteError={handleDeleteError}
-              />
-              {loading && (
-                <Box display="flex" justifyContent="center" my={2}>
-                  <div className="loader" style={{ width: 40, height: 40, border: '4px solid #ccc', borderTop: '4px solid #7695EC', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
-                </Box>
-              )}
-              {error && (
-                <Box color="error.main" textAlign="center" my={2}>{error}</Box>
-              )}
-              {totalPages > 1 && (
-                <Box display="flex" justifyContent="center" alignItems="center" gap={2} my={2}>
-                  <button
-                    onClick={() => setPage(p => Math.max(0, p - 1))}
-                    disabled={page === 0}
-                    style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #7695EC', background: page === 0 ? '#eee' : '#fff', color: '#7695EC', cursor: page === 0 ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+              {/* Loading state for initial load */}
+              {loading && posts.length === 0 ? (
+                <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight={200} gap={2}>
+                  <CircularProgress 
+                    size={50} 
+                    thickness={4}
+                    sx={{ 
+                      color: '#7695EC',
+                      '& .MuiCircularProgress-circle': {
+                        strokeLinecap: 'round',
+                      },
+                    }} 
+                  />
+                  <Typography 
+                    variant="h6" 
+                    color="text.secondary"
+                    sx={{ fontWeight: 500 }}
                   >
-                    Prev
-                  </button>
-                  <span style={{ fontWeight: 600 }}>
-                    Page {page + 1} of {totalPages}
-                  </span>
-                  <button
-                    onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-                    disabled={page === totalPages - 1}
-                    style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #7695EC', background: page === totalPages - 1 ? '#eee' : '#fff', color: '#7695EC', cursor: page === totalPages - 1 ? 'not-allowed' : 'pointer', fontWeight: 600 }}
-                  >
-                    Next
-                  </button>
+                    Carregando posts...
+                  </Typography>
                 </Box>
+              ) : (
+                <>
+                  <PostCardList
+                    posts={sortedPosts}
+                    currentUser={username}
+                    onDelete={handleDelete}
+                    onEdit={() => setRefresh(r => r + 1)}
+                    onDeleteSuccess={handleDeleteSuccess}
+                    onDeleteError={handleDeleteError}
+                  />
+                  {loading && (
+                    <Box 
+                      display="flex" 
+                      flexDirection="column"
+                      alignItems="center" 
+                      justifyContent="center"
+                      my={4}
+                      gap={2}
+                    >
+                      <CircularProgress 
+                        size={40} 
+                        thickness={4}
+                        sx={{ 
+                          color: '#7695EC',
+                          '& .MuiCircularProgress-circle': {
+                            strokeLinecap: 'round',
+                          },
+                        }} 
+                      />
+                      <Typography 
+                        variant="body2" 
+                        color="text.secondary"
+                        sx={{ fontWeight: 500 }}
+                      >
+                        Carregando posts...
+                      </Typography>
+                    </Box>
+                  )}
+                  {error && (
+                    <Box color="error.main" textAlign="center" my={2}>{error}</Box>
+                  )}
+                  {totalPages > 1 && (
+                    <Box display="flex" justifyContent="center" alignItems="center" gap={2} my={2}>
+                      <button
+                        onClick={() => setPage(p => Math.max(0, p - 1))}
+                        disabled={page === 0}
+                        style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #7695EC', background: page === 0 ? '#eee' : '#fff', color: '#7695EC', cursor: page === 0 ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                      >
+                        Prev
+                      </button>
+                      <span style={{ fontWeight: 600 }}>
+                        Page {page + 1} of {totalPages}
+                      </span>
+                      <button
+                        onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                        disabled={page === totalPages - 1}
+                        style={{ padding: '6px 16px', borderRadius: 4, border: '1px solid #7695EC', background: page === totalPages - 1 ? '#eee' : '#fff', color: '#7695EC', cursor: page === totalPages - 1 ? 'not-allowed' : 'pointer', fontWeight: 600 }}
+                      >
+                        Next
+                      </button>
+                    </Box>
+                  )}
+                </>
               )}
             </Box>
           </Box>

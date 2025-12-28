@@ -3,7 +3,7 @@ import type { PostCardProps } from '../types/PostCard.types';
 import { usePostCardController } from '../controller/usePostCardController';
 import ConfirmDialog from '../../common/ConfirmDialog';
 import { a11y } from '../../../utils/accessibility';
-import { Box, IconButton, Typography, Paper } from '@mui/material';
+import { Box, IconButton, Typography, Paper, Tooltip } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
 const PostCardView: React.FC<PostCardProps> = (props) => {
@@ -65,60 +65,42 @@ const PostCardView: React.FC<PostCardProps> = (props) => {
             <Box
               sx={{
                 display: 'flex',
-                gap: 1,
+                gap: 2,
                 flexShrink: 0,
               }}
               role="group"
               aria-label="Post actions"
             >
-              <IconButton
-                size={"small"}
-                onClick={handleDeleteClick}
-                sx={{
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                  },
-                  '&:focus': {
-                    outline: '2px solid white',
-                    outlineOffset: '2px',
-                  },
-                }}
-                aria-label={`Delete post: ${props.title}`}
-                aria-describedby="delete-help"
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-              <IconButton
-                size={"small"}
-                onClick={props.onEdit}
-                sx={{
-                  color: 'white',
-                  '&:hover': {
-                    backgroundColor: 'rgba(255,255,255,0.1)',
-                  },
-                  '&:focus': {
-                    outline: '2px solid white',
-                    outlineOffset: '2px',
-                  },
-                }}
-                aria-label={`Edit post: ${props.title}`}
-                aria-describedby="edit-help"
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <Typography
-                id="delete-help"
-                sx={{ ...a11y.srOnly }}
-              >
-                Press Enter or Space to delete this post
-              </Typography>
-              <Typography
-                id="edit-help"
-                sx={{ ...a11y.srOnly }}
-              >
-                Press Enter or Space to edit this post
-              </Typography>
+              <Tooltip title="Deletar" arrow>
+                <IconButton
+                  size="medium"
+                  onClick={handleDeleteClick}
+                  sx={{
+                    color: '#fff',
+                    backgroundColor: '#e57373',
+                    '&:hover': { backgroundColor: '#d32f2f' },
+                    mx: 0.5,
+                  }}
+                  aria-label={`Deletar post: ${props.title}`}
+                >
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Editar" arrow>
+                <IconButton
+                  size="medium"
+                  onClick={props.onEdit}
+                  sx={{
+                    color: '#fff',
+                    backgroundColor: '#64b5f6',
+                    '&:hover': { backgroundColor: '#1976d2' },
+                    mx: 0.5,
+                  }}
+                  aria-label={`Editar post: ${props.title}`}
+                >
+                  <EditIcon fontSize="small" />
+                </IconButton>
+              </Tooltip>
             </Box>
           )}
         </Box>

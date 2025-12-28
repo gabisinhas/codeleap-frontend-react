@@ -59,7 +59,8 @@ const UserHeader: React.FC<UserHeaderProps> = ({ username, onLogout }) => (
       onClick={onLogout}
       sx={{
         color: '#fff',
-        borderColor: '#fff',
+        borderColor: '#f3f1f1ff',
+        background: '#424242',
         minWidth: { xs: 48, sm: 60 },
         px: { xs: 1, sm: 1.5 },
         py: { xs: 0.5, sm: 0.75 },
@@ -67,12 +68,13 @@ const UserHeader: React.FC<UserHeaderProps> = ({ username, onLogout }) => (
         mr: 2,
         fontSize: { xs: '0.75rem', sm: '0.875rem' },
         flexShrink: 0,
+        boxShadow: '0 2px 8px 0 rgba(229,115,115,0.12)',
         '&:hover': {
-          borderColor: '#b3cfff',
-          background: 'rgba(255,255,255,0.08)'
+          borderColor: '#959292ff',
+          background: '#908f8fff',
         },
         '&:focus': {
-          outline: '2px solid white',
+          outline: '2px solid #fff',
           outlineOffset: '1px',
         }
       }}

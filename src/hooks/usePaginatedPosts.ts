@@ -17,7 +17,7 @@ export interface Post {
 
 export function usePaginatedPosts(searchText: string = '', pageSize = 10, page = 0, refresh = 0) {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true); // Start with true to show initial loading
   const [error, setError] = useState<string | null>(null);
   const [totalCount, setTotalCount] = useState<number>(0);
 

@@ -6,9 +6,15 @@ export function useLoginController(
   onLogin: (login: string, password?: string) => void,
   onGoogleLogin?: (googleToken: string, googleUserName?: string) => void
 ) {
+  const [isLoading, setIsLoading] = useState(false);
   const handleGoogleLogin = async (googleToken: string, googleUserName?: string) => {
     if (onGoogleLogin) {
-      await onGoogleLogin(googleToken, googleUserName);
+      setIsLoading(true);
+      try {
+        await onGoogleLogin(googleToken, googleUserName);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
   const [isRegister, setIsRegister] = useState(false);
@@ -19,6 +25,7 @@ export function useLoginController(
     setIsRegister((prev) => !prev);
   };
   const handleLogin = async (data: { login: string; password: string }) => {
+    setIsLoading(true);
     try {
       const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.login);
       const payload = isEmail
@@ -36,10 +43,13 @@ export function useLoginController(
       }
     } catch (error: any) {
       alert('Login error. Please check your credentials.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleRegister = async (data: { username: string; email: string; password: string }) => {
+    setIsLoading(true);
     try {
       await registerUser({
         username: data.username,
@@ -57,6 +67,8 @@ export function useLoginController(
         message = error.message;
       }
       setRegisterError({ open: true, message });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -73,5 +85,6 @@ export function useLoginController(
     handleCloseSuccess,
     registerError,
     handleCloseError,
+    isLoading,
   };
 }

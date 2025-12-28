@@ -10,5 +10,16 @@ export default defineConfig({
     coverage: {
       reporter: ['text', 'html'],
     },
+    // Prevent "too many open files" error
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        maxForks: 3,
+      },
+    },
+    // Set file watching limits
+    watch: {
+      ignored: ['**/node_modules/**', '**/dist/**'],
+    },
   },
 });

@@ -8,12 +8,6 @@ vi.mock('../services/api', () => ({
   deletePost: vi.fn(),
 }));
 
-// Mock MUI icons to prevent file handle issues
-vi.mock('@mui/icons-material/Warning', () => ({
-  __esModule: true,
-  default: () => <div data-testid="warning-icon" />,
-}));
-
 // Mock the ConfirmDialog component to avoid loading all MUI dependencies
 vi.mock('../components/common/ConfirmDialog', () => ({
   __esModule: true,

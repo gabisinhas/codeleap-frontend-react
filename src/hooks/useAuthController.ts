@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { loginWithGoogle as apiLoginWithGoogle } from '../services/api';
 import { handleError } from '../utils/errorHandler';
 
@@ -20,16 +20,31 @@ const storage = {
     const storedUser = localStorage.getItem('user');
     const accessToken = localStorage.getItem('access_token');
     
-    if (!storedUser || !accessToken) return null;
+    // Require both user data and access token
+    if (!storedUser || !accessToken) {
+      return null;
+    }
     
     try {
       const parsedUser = JSON.parse(storedUser);
+      
+      // Validate that we have meaningful user data
+      if (!parsedUser || typeof parsedUser !== 'object') {
+        return null;
+      }
+      
+      // Check if we have at least one identifier (username, email, or name)
+      if (!parsedUser.username && !parsedUser.email && !parsedUser.name) {
+        return null;
+      }
+      
       return { 
         username: parsedUser.username,
         email: parsedUser.email,
         name: parsedUser.name
       };
-    } catch {
+    } catch (error) {
+      console.error('Error parsing stored user data:', error);
       storage.clearAuth();
       return null;
     }
@@ -43,21 +58,93 @@ const storage = {
 };
 
 export function useAuthController() {
+  const [isInitializing, setIsInitializing] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
+  
+  // Initialize user state synchronously from localStorage on first render
   const [user, setUser] = useState<AuthUser | null>(() => {
-    return storage.getStoredUser();
+    try {
+      const storedUser = localStorage.getItem('user');
+      const accessToken = localStorage.getItem('access_token');
+      
+      if (!storedUser || !accessToken) {
+        return null;
+      }
+      
+      const parsedUser = JSON.parse(storedUser);
+      
+      // Validate that we have meaningful user data
+      if (!parsedUser || typeof parsedUser !== 'object') {
+        storage.clearAuth();
+        return null;
+      }
+      
+      // Check if we have at least one identifier
+      if (!parsedUser.username && !parsedUser.email && !parsedUser.name) {
+        storage.clearAuth();
+        return null;
+      }
+      
+      return { 
+        username: parsedUser.username,
+        email: parsedUser.email,
+        name: parsedUser.name
+      };
+    } catch (error) {
+      console.error('Error initializing user from localStorage:', error);
+      storage.clearAuth();
+      return null;
+    }
   });
 
+  // Set initialization complete immediately after first render
+  useEffect(() => {
+    setIsInitializing(false);
+  }, []);
+
   const loginWithUsername = (login: string, _password?: string) => {
-    // Check if login is an email
-    const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login);
+    if (!login.trim()) {
+      console.error('Login cannot be empty');
+      return;
+    }
     
-    setUser({ 
-      username: isEmail ? undefined : login,
-      email: isEmail ? login : undefined
-    });
+    setIsLoading(true);
+    
+    try {
+      // Check if login is an email
+      const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login);
+      
+      const userData = { 
+        username: isEmail ? undefined : login.trim(),
+        email: isEmail ? login.trim() : undefined
+      };
+      
+      // Store user data for consistency
+      const userToStore = {
+        username: userData.username || userData.email,
+        email: userData.email,
+        name: userData.username || userData.email
+      };
+      
+      // Create mock auth tokens for username login (for consistency)
+      const mockAuth = {
+        access: 'mock_access_token',
+        refresh: 'mock_refresh_token',
+        user: userToStore
+      };
+      
+      storage.saveAuth(mockAuth);
+      setUser(userData);
+    } catch (error) {
+      console.error('Error during username login:', error);
+      setUser(null);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const loginWithGoogle = async (googleToken: string, googleUserName?: string) => {
+    setIsLoading(true);
     try {
       const response = await apiLoginWithGoogle(googleToken);
       
@@ -85,15 +172,25 @@ export function useAuthController() {
         name: googleUserName || userData.name,
         googleToken 
       });
+      setIsLoading(false);
       
     } catch (error) {
       handleError(error, 'Google Authentication');
+      setIsLoading(false);
     }
   };
 
   const logout = () => {
-    setUser(null);
-    storage.clearAuth();
+    setIsLoading(true);
+    
+    try {
+      setUser(null);
+      storage.clearAuth();
+    } catch (error) {
+      console.error('Error during logout:', error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return {
@@ -101,5 +198,7 @@ export function useAuthController() {
     loginWithUsername,
     loginWithGoogle,
     logout,
+    isLoading,
+    isInitializing,
   };
 }
