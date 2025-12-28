@@ -161,7 +161,7 @@ const PostCardView: React.FC<PostCardProps> = (props) => {
         title="localhost:5173 diz"
         message="Are you sure you want to delete this item?"
         confirmText="OK"
-        cancelText="Cancelar"
+        cancelText="Cancel"
         onConfirm={handleConfirmDelete}
         onCancel={handleCancelDelete}
         severity="warning"
