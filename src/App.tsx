@@ -1,4 +1,3 @@
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Backdrop, CircularProgress, Typography, Box } from '@mui/material';
 import { useAuthController } from './hooks/useAuthController';
 import Login from './components/LoginView/Login';
@@ -7,18 +6,6 @@ import MainPage from './components/MainPage/MainPage';
 if (import.meta.env.DEV) {
   setTimeout(() => import('./__tests__/a11yTesting'), 1000);
 }
-
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      staleTime: 5 * 60 * 1000,
-      gcTime: 10 * 60 * 1000,
-      retry: 1,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-    },
-  },
-});
 
 const LoadingScreen: React.FC<{ message?: string }> = ({ message = "Carregando..." }) => (
   <Backdrop
@@ -128,7 +115,7 @@ const App: React.FC = () => {
   const headerDisplayName = getHeaderDisplayName();
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <>
       <UserHeader username={headerDisplayName} onLogout={logout} />
       <MainPage
         username={displayName}
@@ -138,7 +125,7 @@ const App: React.FC = () => {
         onDelete={() => {
         }}
       />
-    </QueryClientProvider>
+    </>
   );
 }
 

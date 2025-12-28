@@ -6,11 +6,10 @@ Modern blog platform built with React 19, TypeScript, and Material UI. Features 
 ## 🚀 Tech Stack
 
 **Frontend:** React 19, TypeScript, Vite, Material UI  
-**State Management:** TanStack Query, Local Storage  
+**State Management:** Local Storage  
 **Forms & Validation:** Formik + Yup validation  
 **Authentication:** Google OAuth, JWT tokens  
 **Testing:** Vitest, React Testing Library, JSDOM  
-**Routing:** React Router v7  
 **Deployment:** Vercel ready
 
 ## ✨ Features

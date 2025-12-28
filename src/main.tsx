@@ -3,7 +3,6 @@ import { createRoot } from 'react-dom/client';
 import './index.css';
 
 import App from './App.tsx';
-import { BrowserRouter } from 'react-router-dom';
 
 import { GoogleOAuthProvider } from '@react-oauth/google';
 
@@ -23,9 +22,7 @@ if (import.meta.env.DEV) {
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <GoogleOAuthProvider clientId={googleClientId}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
+      <App />
     </GoogleOAuthProvider>
   </StrictMode>,
 );
