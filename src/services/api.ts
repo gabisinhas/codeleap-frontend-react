@@ -103,7 +103,6 @@ export function registerUser(data: {
   username: string;
   email: string;
   password1: string;
-  password2: string;
 }) {
   return api.post('/auth/register/', data);
 }

@@ -55,7 +55,6 @@ export function useLoginController(
         username: data.username,
         email: data.email,
         password1: data.password,
-        password2: data.password,
       });
       setRegisterSuccess(true);
       setIsRegister(false);
