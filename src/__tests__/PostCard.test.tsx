@@ -17,7 +17,7 @@ vi.mock('@mui/icons-material/Warning', () => ({
 // Mock the ConfirmDialog component to avoid loading all MUI dependencies
 vi.mock('../components/common/ConfirmDialog', () => ({
   __esModule: true,
-  default: ({ open, children, ...props }: any) => 
+  default: ({ open, children }: any) => 
     open ? <div data-testid="confirm-dialog">{children}</div> : null,
 }));
 

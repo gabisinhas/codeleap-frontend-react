@@ -50,7 +50,7 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
     if (onDelete) onDelete(id);
   };
 
-  const handleDeleteSuccess = (message: string) => {
+  const handleDeleteSuccess = (_message: string) => {
     setDeleteSuccessOpen(true);
   };
 

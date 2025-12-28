@@ -65,7 +65,7 @@ export function useAuthController() {
     return storage.getStoredUser();
   });
 
-  const loginWithUsername = (login: string, password?: string) => {
+  const loginWithUsername = (login: string, _password?: string) => {
     // Check if login is an email
     const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login);
     
