@@ -128,7 +128,7 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
               </Box>
             )}
             <Box>
-              {/* Loading state for initial load */}
+              
               {loading && posts.length === 0 ? (
                 <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" minHeight={200} gap={2}>
                   <CircularProgress 

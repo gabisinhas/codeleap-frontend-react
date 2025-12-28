@@ -20,7 +20,7 @@ const storage = {
     const storedUser = localStorage.getItem('user');
     const accessToken = localStorage.getItem('access_token');
     
-    // Require both user data and access token
+    
     if (!storedUser || !accessToken) {
       return null;
     }
@@ -28,12 +28,12 @@ const storage = {
     try {
       const parsedUser = JSON.parse(storedUser);
       
-      // Validate that we have meaningful user data
+      
       if (!parsedUser || typeof parsedUser !== 'object') {
         return null;
       }
       
-      // Check if we have at least one identifier (username, email, or name)
+      
       if (!parsedUser.username && !parsedUser.email && !parsedUser.name) {
         return null;
       }
@@ -61,7 +61,7 @@ export function useAuthController() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   
-  // Initialize user state synchronously from localStorage on first render
+  
   const [user, setUser] = useState<AuthUser | null>(() => {
     try {
       const storedUser = localStorage.getItem('user');
@@ -73,13 +73,13 @@ export function useAuthController() {
       
       const parsedUser = JSON.parse(storedUser);
       
-      // Validate that we have meaningful user data
+      
       if (!parsedUser || typeof parsedUser !== 'object') {
         storage.clearAuth();
         return null;
       }
       
-      // Check if we have at least one identifier
+      
       if (!parsedUser.username && !parsedUser.email && !parsedUser.name) {
         storage.clearAuth();
         return null;
@@ -97,7 +97,7 @@ export function useAuthController() {
     }
   });
 
-  // Set initialization complete immediately after first render
+  
   useEffect(() => {
     setIsInitializing(false);
   }, []);
@@ -108,12 +108,11 @@ export function useAuthController() {
       return;
     }
     
-    // This function should only update the UI state after successful authentication
-    // The actual authentication tokens should already be in localStorage from handleLogin
+    
     setIsLoading(true);
     
     try {
-      // Get tokens from localStorage that should have been set by successful login
+      
       const accessToken = localStorage.getItem('access_token');
       const refreshToken = localStorage.getItem('refresh_token');
       const storedUser = localStorage.getItem('user');
@@ -125,7 +124,7 @@ export function useAuthController() {
         return;
       }
       
-      // Parse and validate stored user data
+      
       const userData = JSON.parse(storedUser);
       
       if (!userData || typeof userData !== 'object') {
@@ -135,7 +134,7 @@ export function useAuthController() {
         return;
       }
       
-      // Update the UI state with the authenticated user
+      
       setUser({ 
         username: userData.username,
         email: userData.email,
@@ -166,7 +165,7 @@ export function useAuthController() {
         return;
       }
       
-      // Include Google user name in stored data
+      
       const userWithGoogleName = {
         ...userData,
         name: googleUserName || userData.name

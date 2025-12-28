@@ -1,24 +1,18 @@
-import React from 'react';
-import { useAuthController } from './hooks/useAuthController';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Backdrop, CircularProgress, Typography, Box } from '@mui/material';
-
-// Import components directly instead of lazy loading to prevent delays
+import { useAuthController } from './hooks/useAuthController';
 import Login from './components/LoginView/Login';
-import MainPage from './components/MainPage/MainPage';
 import UserHeader from './components/Header/UserHeader';
-
-// Lazy import accessibility testing in development to avoid blocking main thread
+import MainPage from './components/MainPage/MainPage';
 if (import.meta.env.DEV) {
   setTimeout(() => import('./__tests__/a11yTesting'), 1000);
 }
 
-// Optimized QueryClient configuration
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
       retry: 1,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
@@ -26,7 +20,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Loading component for Suspense fallback
 const LoadingScreen: React.FC<{ message?: string }> = ({ message = "Carregando..." }) => (
   <Backdrop
     sx={{
@@ -70,12 +63,10 @@ const LoadingScreen: React.FC<{ message?: string }> = ({ message = "Carregando..
 const App: React.FC = () => {
   const { user, loginWithUsername, loginWithGoogle, logout, isLoading, isInitializing } = useAuthController();
 
-  // Only show loading during actual initialization (very brief)
   if (isInitializing) {
     return <LoadingScreen message="Carregando..." />;
   }
 
-  // If no authenticated user, show login immediately
   if (!user) {
     return (
       <Login 
@@ -85,7 +76,6 @@ const App: React.FC = () => {
     );
   }
 
-  // Show loading only during login process, not initialization
   if (isLoading) {
     return <LoadingScreen message="Entrando..." />;
   }
@@ -93,14 +83,10 @@ const App: React.FC = () => {
   const getDisplayName = () => {
     if (!user) return 'User';
 
-    // Try to get stored user data first
     try {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
-        
-        // Priority for display: stored username -> stored email -> Google name -> fallback
-        // Use username first for consistency with post ownership comparison
         if (parsedUser.username) {
           return parsedUser.username;
         }
@@ -112,24 +98,17 @@ const App: React.FC = () => {
         }
       }
     } catch {
-      // If localStorage parsing fails, continue with user object
     }
-
-    // Fallback to user object data
-    // Priority: username -> email -> Google name -> default
     return user.username || user.email || user.name || 'User';
   };
 
   const getHeaderDisplayName = () => {
     if (!user) return 'User';
 
-    // For header, prioritize the friendly name (Google name) for better UX
     try {
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
         const parsedUser = JSON.parse(storedUser);
-        
-        // Priority for header display: Google name -> stored username -> stored email -> fallback
         if (parsedUser.name) {
           return parsedUser.name;
         }
@@ -141,11 +120,7 @@ const App: React.FC = () => {
         }
       }
     } catch {
-      // If localStorage parsing fails, continue with user object
     }
-
-    // Fallback to user object data
-    // Priority: Google name -> username -> email -> default
     return user.name || user.username || user.email || 'User';
   };
 

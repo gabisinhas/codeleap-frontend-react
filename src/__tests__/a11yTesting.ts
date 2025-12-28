@@ -1,6 +1,4 @@
-// Comprehensive accessibility and responsiveness tests
 export const a11yTests = {
-  // Keyboard navigation test
   testKeyboardNavigation: () => {
     const focusableElements = document.querySelectorAll(
       'a[href], button, textarea, input[type="text"], input[type="radio"], input[type="checkbox"], select, [tabindex]:not([tabindex="-1"])'
@@ -9,7 +7,7 @@ export const a11yTests = {
     console.log('Keyboard Navigation Test:');
     console.log(`Found ${focusableElements.length} focusable elements`);
     
-    // Check if all interactive elements have proper focus indicators
+      
     focusableElements.forEach((element, index) => {
       const hasAriaLabel = element.hasAttribute('aria-label');
       const hasAriaLabelledBy = element.hasAttribute('aria-labelledby');
@@ -24,7 +22,7 @@ export const a11yTests = {
     });
   },
 
-  // Color contrast test (basic)
+  
   testColorContrast: () => {
     console.log('Color Contrast Test:');
     const elements = document.querySelectorAll('*');
@@ -35,7 +33,7 @@ export const a11yTests = {
       const color = styles.color;
       const backgroundColor = styles.backgroundColor;
       
-      // Basic check for very light text on light backgrounds
+      
       if (color === 'rgb(255, 255, 255)' && backgroundColor === 'rgb(255, 255, 255)') {
         contrastIssues++;
       }
@@ -44,7 +42,7 @@ export const a11yTests = {
     console.log(`Found ${contrastIssues} potential contrast issues`);
   },
 
-  // Screen reader simulation
+  
   testScreenReader: () => {
     const headings = document.querySelectorAll('h1, h2, h3, h4, h5, h6');
     const forms = document.querySelectorAll('form');
@@ -57,7 +55,7 @@ export const a11yTests = {
     console.log(`Buttons: ${buttons.length}`);
     console.log(`Links: ${links.length}`);
     
-    // Check heading hierarchy
+    
     let previousLevel = 0;
     headings.forEach((heading, index) => {
       const level = parseInt(heading.tagName.substring(1));
@@ -68,7 +66,7 @@ export const a11yTests = {
     });
   },
 
-  // Responsive design test
+  
   testResponsiveness: () => {
     const breakpoints = [320, 480, 768, 1024, 1200, 1440];
     const results: any = {};
@@ -76,7 +74,7 @@ export const a11yTests = {
     console.log('Responsiveness Test:');
     
     breakpoints.forEach(width => {
-      // Simulate viewport width
+      
       const elements = document.querySelectorAll('*');
       let overflowElements = 0;
       
@@ -97,7 +95,7 @@ export const a11yTests = {
     return results;
   },
 
-  // Touch target size test
+  
   testTouchTargets: () => {
     const interactiveElements = document.querySelectorAll('button, a, input, select, textarea, [onclick], [role="button"]');
     let smallTargets = 0;
@@ -106,7 +104,7 @@ export const a11yTests = {
     
     interactiveElements.forEach((element, index) => {
       const rect = element.getBoundingClientRect();
-      const minSize = 44; // WCAG recommendation
+      const minSize = 44;
       
       if (rect.width < minSize || rect.height < minSize) {
         smallTargets++;
@@ -123,7 +121,7 @@ export const a11yTests = {
     return { smallTargets, total: interactiveElements.length };
   },
 
-  // Run all tests
+  
   runAllTests: () => {
     console.log('🔍 Running Accessibility & Responsiveness Tests...\n');
     
@@ -152,9 +150,7 @@ export const a11yTests = {
   }
 };
 
-// Auto-run tests in development
 if (import.meta.env.DEV) {
-  // Wait for DOM to be ready
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
       setTimeout(() => a11yTests.runAllTests(), 1000);
@@ -164,5 +160,4 @@ if (import.meta.env.DEV) {
   }
 }
 
-// Make available globally for manual testing
 (window as any).a11yTests = a11yTests;

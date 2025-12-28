@@ -1,6 +1,5 @@
-// Accessibility utilities for consistent app-wide implementation
 export const a11y = {
-  // Screen reader only text for complex actions
+  
   srOnly: {
     position: 'absolute' as const,
     width: '1px',
@@ -13,15 +12,15 @@ export const a11y = {
     border: 0,
   },
 
-  // Focus management
+  
   focusRing: {
     outline: '2px solid #1976d2',
     outlineOffset: '2px',
   },
 
-  // Color contrast helpers
+  
   colors: {
-    primary: '#1976d2', // WCAG AA compliant
+    primary: '#1976d2',
     primaryDark: '#115293',
     error: '#d32f2f',
     warning: '#ed6c02',
@@ -31,7 +30,7 @@ export const a11y = {
     disabled: '#bdbdbd',
   },
 
-  // Responsive breakpoints consistent with MUI
+  
   breakpoints: {
     xs: 0,
     sm: 600,
@@ -40,7 +39,7 @@ export const a11y = {
     xl: 1536,
   },
 
-  // Common ARIA patterns
+  
   getAriaProps: (type: 'button' | 'form' | 'dialog' | 'alert', label: string, describedBy?: string) => {
     const base = { 'aria-label': label };
     
@@ -58,7 +57,7 @@ export const a11y = {
     }
   },
 
-  // Keyboard navigation helpers
+  
   handleKeyboard: (event: React.KeyboardEvent, action: () => void) => {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
@@ -66,7 +65,7 @@ export const a11y = {
     }
   },
 
-  // Skip link for keyboard navigation
+  
   skipLink: {
     position: 'absolute' as const,
     top: '-40px',
@@ -83,9 +82,8 @@ export const a11y = {
   },
 };
 
-// Responsive design utilities
 export const responsive = {
-  // Container max-widths
+  
   container: {
     xs: '100%',
     sm: '600px',
@@ -94,7 +92,7 @@ export const responsive = {
     xl: '1400px',
   },
 
-  // Common spacing patterns
+  
   spacing: {
     xs: { p: 0.25, m: 0.125 },
     sm: { p: 0.75, m: 0.25 },
@@ -102,7 +100,7 @@ export const responsive = {
     lg: { p: 2.5, m: 1.25 },
   },
 
-  // Typography scales
+  
   typography: {
     h1: { xs: '1.25rem', sm: '1.375rem', md: '1.625rem' },
     h2: { xs: '1rem', sm: '1.25rem', md: '1.375rem' },
@@ -111,14 +109,14 @@ export const responsive = {
     caption: { xs: '0.65rem', sm: '0.7rem', md: '0.75rem' },
   },
 
-  // Button sizes
+  
   button: {
     small: { xs: 20, sm: 24, md: 28 },
     medium: { xs: 24, sm: 28, md: 32 },
     large: { xs: 28, sm: 32, md: 36 },
   },
 
-  // Grid helpers
+  
   grid: {
     post: { xs: 12, sm: 12, md: 8, lg: 6 },
     sidebar: { xs: 12, sm: 12, md: 4, lg: 6 },

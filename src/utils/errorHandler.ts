@@ -69,7 +69,7 @@ export class ErrorHandler {
     const status = error.response?.status;
     const data = error.response?.data as any;
     
-    // Handle different status codes
+    
     const statusMessages: Record<number, string> = {
       400: 'Invalid request data',
       401: 'Authentication required',
@@ -87,7 +87,7 @@ export class ErrorHandler {
     let message = statusMessages[status || 0] || 'Network error occurred';
     let details: string[] | undefined;
 
-    // Extract detailed error messages from response
+    
     if (data) {
       if (typeof data === 'string') {
         message = data;
@@ -102,7 +102,7 @@ export class ErrorHandler {
           ? data.non_field_errors.join(', ')
           : data.non_field_errors;
       } else if (typeof data === 'object') {
-        // Handle field-specific validation errors
+        
         const fieldErrors = Object.entries(data)
           .filter(([key]) => key !== 'message' && key !== 'detail')
           .map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(', ') : value}`)
@@ -131,20 +131,18 @@ export class ErrorHandler {
   }
 
   private logError(error: unknown, context: string, apiError: ApiError): void {
-    // In development, log to console
+    
     if (import.meta.env.DEV) {
       console.group(`🚨 Error in ${context}`);
       console.error('Processed Error:', apiError);
       console.error('Original Error:', error);
       console.groupEnd();
     } else {
-      // In production, you could send to logging service
+      
       console.warn(`Error in ${context}:`, apiError.message);
     }
 
-    // Here you could integrate with external logging services
-    // like Sentry, LogRocket, etc.
-    // this.sendToExternalLogger(logData);
+    
   }
 
   private showUserError(apiError: ApiError): void {
@@ -154,18 +152,17 @@ export class ErrorHandler {
       displayMessage += '\n\nDetails:\n' + apiError.details.join('\n');
     }
     
-    // For now using alert, but this could be replaced with a toast system
+    
     alert(displayMessage);
   }
 
-  // Helper method to check if error is retryable
+  
   isRetryableError(error: ApiError): boolean {
     const retryableStatuses = [408, 429, 500, 502, 503, 504];
     return retryableStatuses.includes(error.status || 0);
   }
 }
 
-// Convenience function for quick error handling
 export const handleError = (
   error: unknown, 
   context: string = 'Operation',
@@ -174,7 +171,6 @@ export const handleError = (
   return ErrorHandler.getInstance().handleError(error, context, options);
 };
 
-// Async retry utility
 export const withRetry = async <T>(
   operation: () => Promise<T>,
   maxRetries: number = 3,
