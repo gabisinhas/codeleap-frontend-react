@@ -93,7 +93,7 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
         <DialogContent>
           <TextField
             margin="dense"
-            label="Título"
+            label="Title"
             fullWidth
             value={editTitle}
             onChange={e => setEditTitle(e.target.value)}
@@ -101,7 +101,7 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
           />
           <TextField
             margin="dense"
-            label="Conteúdo"
+            label="Content"
             fullWidth
             multiline
             minRows={3}
