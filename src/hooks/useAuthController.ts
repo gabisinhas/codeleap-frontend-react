@@ -121,7 +121,7 @@ export function useAuthController() {
       
       // Store user data for consistency
       const userToStore = {
-        username: userData.username || userData.email,
+        username: userData.username || userData.email || 'anonymous',
         email: userData.email,
         name: userData.username || userData.email
       };

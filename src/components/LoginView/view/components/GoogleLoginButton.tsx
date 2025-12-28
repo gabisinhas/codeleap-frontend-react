@@ -39,7 +39,6 @@ const GoogleLoginButton: React.FC<GoogleLoginButtonProps> = ({ onGoogleLogin, is
       onError={() => {
         console.log('Google login failed');
       }}
-      disabled={isLoading}
     />
     {isLoading && (
       <Box

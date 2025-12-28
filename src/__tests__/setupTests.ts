@@ -6,7 +6,7 @@ import React from 'react';
 vi.mock('@mui/icons-material', () => {
   // Create a proxy to handle any icon import dynamically
   return new Proxy({}, {
-    get: (target, prop) => {
+    get: (_target, prop) => {
       // Return a mock React component for any icon
       return () => {
         const displayName = String(prop).replace(/([A-Z])/g, '-$1').toLowerCase();

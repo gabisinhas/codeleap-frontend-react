@@ -2,7 +2,6 @@ import React from 'react';
 import type { PostCardProps } from '../types/PostCard.types';
 import { usePostCardController } from '../controller/usePostCardController';
 import ConfirmDialog from '../../common/ConfirmDialog';
-import { a11y } from '../../../utils/accessibility';
 import { Box, IconButton, Typography, Paper, Tooltip } from '@mui/material';
 import { Delete as DeleteIcon, Edit as EditIcon } from '@mui/icons-material';
 
