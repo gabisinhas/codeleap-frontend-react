@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { PostCardProps } from '../types/PostCard.types';
 import { updatePost, deletePost } from '../../../services/api';
+import { handleError, withRetry } from '../../../utils/errorHandler';
 
 export function usePostCardController(props: PostCardProps) {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -13,16 +14,6 @@ export function usePostCardController(props: PostCardProps) {
   const postUsername = normalizeUsername(props.username);
   const currentUsername = normalizeUsername(props.currentUser);
   
-  // Debug logging to help identify the issue
-  console.log('PostCard Debug:', {
-    postUsername,
-    currentUsername,
-    propsUsername: props.username,
-    propsCurrentUser: props.currentUser,
-    areEqual: postUsername === currentUsername,
-    areEqualIgnoreCase: postUsername.toLowerCase() === currentUsername.toLowerCase()
-  });
-  
   const isOwner = postUsername === currentUsername || 
                   postUsername.toLowerCase() === currentUsername.toLowerCase();
 
@@ -34,7 +25,12 @@ export function usePostCardController(props: PostCardProps) {
     setShowConfirmDialog(false);
     
     try {
-      await deletePost(props.id);
+      await withRetry(
+        () => deletePost(props.id),
+        2,
+        1000,
+        'Delete Post'
+      );
       if (props.onDelete) {
         await props.onDelete();
       }
@@ -42,12 +38,9 @@ export function usePostCardController(props: PostCardProps) {
         props.onDeleteSuccess("Your post was deleted successfully!");
       }
     } catch (error) {
-      console.error('Error deleting post:', error);
+      const apiError = handleError(error, 'Post Deletion', { showAlert: false });
       if (props.onDeleteError) {
-        const errorMessage = error && typeof error === 'object' && 'response' in error
-          ? (error as { response: { data: { detail: string } } })?.response?.data?.detail || 'Failed to delete post.'
-          : 'Failed to delete post.';
-        props.onDeleteError(errorMessage);
+        props.onDeleteError(apiError.message);
       }
     }
   };
@@ -58,7 +51,12 @@ export function usePostCardController(props: PostCardProps) {
 
   const handleEdit = async (data: { title: string; content: string }) => {
     try {
-      await updatePost(props.id, data);
+      await withRetry(
+        () => updatePost(props.id, data),
+        3,
+        1000,
+        'Update Post'
+      );
       if (props.onEdit) {
         await props.onEdit();
       }
@@ -66,12 +64,9 @@ export function usePostCardController(props: PostCardProps) {
         props.onEditSuccess("Your update was completed successfully!");
       }
     } catch (error) {
-      console.error('Error editing post:', error);
+      const apiError = handleError(error, 'Post Update', { showAlert: false });
       if (props.onEditError) {
-        const errorMessage = error && typeof error === 'object' && 'response' in error
-          ? (error as { response: { data: { detail: string } } })?.response?.data?.detail || 'Failed to update post.'
-          : 'Failed to update post.';
-        props.onEditError(errorMessage);
+        props.onEditError(apiError.message);
       }
     }
   };

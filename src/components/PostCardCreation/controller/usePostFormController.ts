@@ -1,6 +1,7 @@
 
 import { useState } from 'react';
 import { createPost } from '../../../services/api';
+import { handleError, withRetry } from '../../../utils/errorHandler';
 
 
 export const usePostFormController = (
@@ -19,19 +20,23 @@ export const usePostFormController = (
     setError(null);
     try {
       const postData = { title: title.trim(), content: content.trim(), username: currentUser };
-      await createPost(postData);
+      await withRetry(
+        () => createPost(postData),
+        3,
+        1000,
+        'Post Creation'
+      );
       if (onCreate) {
         onCreate(postData);
       }
       setTitle('');
       setContent('');
     } catch (err: any) {
-      const msg = err?.response?.data?.detail || 'Error creating post.';
-      setError(msg);
+      const apiError = handleError(err, 'Post Creation', { showAlert: false });
+      setError(apiError.message);
       if (onCreate) {
-        onCreate(null, msg);
+        onCreate(null, apiError.message);
       }
-      console.error(err);
     } finally {
       setLoading(false);
     }

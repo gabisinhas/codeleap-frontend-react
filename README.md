@@ -1,109 +1,97 @@
 
 # CodeLeap Blog Platform
 
-This project is a full-featured blog platform built with React, TypeScript, and Vite. It allows users to register, log in, create, edit, delete, and search posts in a modern, responsive interface. The application is ready for deployment on Vercel and integrates with a backend API for persistent data storage.
+Modern blog platform with React 19, TypeScript, and Material UI. Features full CRUD operations, authentication (Google OAuth + username/password), and responsive design.
 
-## Features
+## 🚀 Tech Stack
 
-- **User Authentication:**
-  - Register with username and password
-  - Login with username/password or Google OAuth
-  - Logout functionality
+**Frontend:** React 19, TypeScript, Vite, Material UI  
+**State:** TanStack Query, Local Storage  
+**Forms:** Formik + Yup validation  
+**Auth:** Google OAuth, JWT tokens  
+**Testing:** Vitest, Testing Library  
+**Deploy:** Vercel ready
 
-- **Post Management:**
-  - Create new posts with title and content
-  - Edit and delete your own posts
-  - View all posts with pagination and search
-  - Posts display author, creation date, and content
+## ✨ Features
 
-- **UI/UX:**
-  - Responsive design using Material UI
-  - Success and error notifications for all actions (in English)
-  - Modal dialogs for editing posts
-  - Real-time updates after creating, editing, or deleting posts
+- **Authentication:** Register/Login with Google OAuth or credentials
+- **Posts:** Full CRUD with real-time updates, search, and pagination
+- **UI:** Responsive Material UI with success/error notifications
+- **API:** REST integration with error handling and token management
 
-- **API Integration:**
-  - All data is persisted via REST API endpoints
-  - Uses PATCH for editing and DELETE for removing posts
-  - Handles API errors gracefully with user feedback
+## 🏗️ Architecture
 
-- **Deployment Ready:**
-  - Includes Vercel configuration for easy deployment
-  - Environment variables supported for API base URL
+```
+src/
+├── components/           # Feature-based components
+│   ├── LoginView/       # Login with controller/view pattern
+│   ├── PostCard*/       # Post CRUD operations
+│   └── common/          # Reusable UI components
+├── hooks/               # Custom hooks for business logic
+├── services/            # API calls and external services
+└── __tests__/           # Unit tests
+```
 
-## How It Works
+## 🛠️ Quick Start
 
-1. **Authentication:**
-   - Users can register or log in. Google login is also supported.
-   - After login, the main page displays all posts and allows post management.
-
-2. **Post CRUD:**
-   - Users can create a post by filling out a form.
-   - Each post can be edited or deleted by its author.
-   - Editing opens a modal dialog; changes are saved via PATCH request.
-   - Deleting a post removes it from the list and the backend.
-
-3. **Listing & Search:**
-   - Posts are listed with pagination and can be searched by title, content, or username.
-   - Sorting options are available (newest/oldest).
-
-4. **Feedback:**
-   - All actions (create, edit, delete) show success or error messages in English.
-   - The UI updates automatically after any change.
-
-## Getting Started
-
-### Prerequisites
-- Node.js (v18 or higher recommended)
-- npm
-
-### Installation
 ```bash
+# Clone and install
 git clone https://github.com/gabisinhas/codeleap-frontend-react.git
 cd codeleap-frontend-react
 npm install
+
+# Environment setup
+echo "VITE_API_BASE_URL=http://localhost:8000" > .env
+echo "VITE_GOOGLE_CLIENT_ID=your-google-client-id" >> .env
+
+# Development
+npm run dev              # Start dev server (localhost:5173)
+npm run test             # Run tests
+npm run lint             # Check code quality
+npm run build            # Production build
 ```
 
-### Running Locally
+## 🔧 Environment Variables
+
+```env
+VITE_API_BASE_URL=http://localhost:8000           # Backend API URL
+VITE_GOOGLE_CLIENT_ID=your-google-oauth-client-id # Google OAuth
+```
+
+## 📡 API Integration
+
+**Required Endpoints:**
+- `POST /auth/login/` - User authentication
+- `POST /auth/google/` - Google OAuth
+- `GET /posts/` - List posts (supports pagination/search)
+- `POST /createpost/` - Create post
+- `PATCH /posts/{id}/` - Update post  
+- `DELETE /posts/{id}/` - Delete post
+
+## 🧪 Testing
+
 ```bash
-npm run dev
-```
-The app will be available at http://localhost:5173
-
-### Environment Variables
-Create a `.env` file in the root with:
-```
-VITE_API_BASE_URL=https://your-api-url.com
+npm run test             # Unit tests
+npm run test:coverage    # Coverage report
+npm run test:ui          # Test UI
 ```
 
-### Building for Production
+## 📦 Deployment
+
+**Vercel (Recommended):**
+1. Connect GitHub repo to Vercel
+2. Set environment variables in dashboard
+3. Auto-deploy on push
+
+**Manual:**
 ```bash
 npm run build
+# Upload dist/ folder to your hosting
 ```
-The output will be in the `dist/` folder.
 
-### Deploying to Vercel
-1. Push your code to GitHub.
-2. Connect the repository to Vercel.
-3. Set the environment variable `VITE_API_BASE_URL` in the Vercel dashboard.
-4. Deploy!
+## 🔍 Troubleshooting
 
-## Project Structure
-
-- `src/components/` — All React components (Login, MainPage, PostCard, etc)
-- `src/hooks/` — Custom React hooks (authentication, posts, etc)
-- `src/services/` — API integration (fetch, create, update, delete)
-- `src/utils/` — Utility components (Snackbars, etc)
-- `public/` — Static assets
-
-## API Endpoints (Expected)
-
-- `POST   /createpost/` — Create a new post
-- `GET    /posts` — List all posts
-- `PATCH  /posts/:id` — Edit a post
-- `DELETE /posts/:id` — Delete a post
-- `POST   /auth/login/` — User login
-
-## License
-
-MIT
+- **CORS errors:** Ensure backend allows your domain
+- **Google OAuth:** Verify client ID and authorized origins
+- **API calls fail:** Check `VITE_API_BASE_URL` environment variable
+- **Build errors:** Run `npm run type-check` for TypeScript issues

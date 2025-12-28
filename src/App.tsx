@@ -4,6 +4,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import MainPage from './components/MainPage/MainPage';
 import UserHeader from './components/Header/UserHeader';
 
+// Import accessibility testing in development
+if (import.meta.env.DEV) {
+  import('./__tests__/a11yTesting');
+}
+
 const queryClient = new QueryClient();
 
 const App: React.FC = () => {

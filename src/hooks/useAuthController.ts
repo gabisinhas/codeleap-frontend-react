@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { loginWithGoogle as apiLoginWithGoogle } from '../services/api';
+import { handleError } from '../utils/errorHandler';
 
 export type AuthUser = {
   username?: string;
@@ -38,25 +39,6 @@ const storage = {
     localStorage.removeItem('access_token');
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('user');
-  }
-};
-
-const handleError = (error: unknown, defaultMessage: string = 'Unknown error') => {
-  console.error('Auth error:', error);
-  
-  const isAxiosError = (err: unknown): err is { response: { status: number } } => 
-    err !== null && typeof err === 'object' && 'response' in err;
-  
-  if (isAxiosError(error)) {
-    const status = error.response?.status;
-    const errorMessages = {
-      400: 'Invalid token',
-      403: 'Access denied',
-      500: 'Server error'
-    };
-    alert(errorMessages[status as keyof typeof errorMessages] || `Error ${status}`);
-  } else {
-    alert(defaultMessage);
   }
 };
 
@@ -105,7 +87,7 @@ export function useAuthController() {
       });
       
     } catch (error) {
-      handleError(error, 'Error during Google login');
+      handleError(error, 'Google Authentication');
     }
   };
 

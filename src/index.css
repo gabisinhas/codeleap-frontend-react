@@ -1,3 +1,44 @@
+/* Accessibility improvements */
+/* Enhanced focus indicators */
+*:focus-visible {
+  outline: 2px solid #1976d2 !important;
+  outline-offset: 2px !important;
+}
+
+/* Skip link for keyboard navigation */
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 6px;
+  background: #1976d2;
+  color: white;
+  padding: 8px 16px;
+  text-decoration: none;
+  z-index: 9999;
+  border-radius: 0 0 4px 4px;
+  font-weight: 500;
+}
+
+.skip-link:focus {
+  top: 6px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .postcard-animated {
+    border: 2px solid currentColor;
+  }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+  .postcard-animated,
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
 /* Loader animation */
 @keyframes spin {
   0% { transform: rotate(0deg); }
@@ -6,13 +47,21 @@
 
 /* PostCard hover and transition */
 .postcard-animated {
-  transition: box-shadow 0.3s, transform 0.3s;
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
+
 .postcard-animated:hover {
   box-shadow: 0 8px 24px rgba(118,149,236,0.18);
-  transform: translateY(-4px) scale(1.01);
+  transform: translateY(-2px);
 }
+
+/* Better responsive images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
 /*
   Global styles and resets only. For new components, use MUI's ThemeProvider, sx prop, or styled().
   Avoid adding component-specific styles here.
@@ -23,30 +72,43 @@
   line-height: 1.5;
   font-weight: 400;
   color: #333;
-  background-color: #dedede;
+  background-color: #f5f5f5;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  /* Better text scaling */
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
 }
 
 a {
   font-weight: 500;
-  color: #646cff;
+  color: #1976d2;
   text-decoration: inherit;
 }
 a:hover {
-  color: #535bf2;
+  color: #115293;
 }
-
 
 html, body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #dedede;
-  width: 100vw;
+  background: #f5f5f5;
+  width: 100%;
   overflow-x: hidden;
+}
+
+/* Better button and interactive element sizes for touch */
+@media (max-width: 768px) {
+  button, 
+  [role="button"],
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 32px;
+    min-width: 32px;
+  }
 }
 
 h1 {

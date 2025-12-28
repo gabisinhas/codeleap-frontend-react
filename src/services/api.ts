@@ -107,6 +107,8 @@ export function registerUser(data: {
   return api.post('/auth/register/', data);
 }
 
+import { withRetry } from '../utils/errorHandler';
+
 export async function loginWithGoogle(googleToken: string) {
   const csrfToken = await getCSRFToken();
 
@@ -116,8 +118,8 @@ export async function loginWithGoogle(googleToken: string) {
     ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
   };
 
-  try {
-    const response = await api.post(
+  return withRetry(
+    () => api.post(
       '/auth/google/',
       { token: googleToken },
       {
@@ -125,16 +127,9 @@ export async function loginWithGoogle(googleToken: string) {
         withCredentials: true,
         timeout: 30000,
       }
-    );
-    
-    return response;
-  } catch (error) {
-    console.error('Google login request failed:', {
-      error: error,
-      url: `${API_BASE_URL}/auth/google/`,
-      headers,
-      tokenLength: googleToken.length
-    });
-    throw error;
-  }
+    ),
+    2, // Max 2 retries for auth
+    1000,
+    'Google OAuth Login'
+  );
 }

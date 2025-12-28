@@ -5,6 +5,7 @@ import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import type { PostFormProps } from '../types/PostForm.types';
+import { a11y } from '../../../utils/accessibility';
 
 interface PostFormViewProps extends PostFormProps {
   title: string;
@@ -23,59 +24,88 @@ const PostFormView: React.FC<PostFormViewProps> = ({
 }) => (
   <Paper
     sx={{
-      p: { xs: 0.5, sm: 1 },
-      mb: 1,
-      maxWidth: 600,
+      p: { xs: 0.75, sm: 1.25, md: 1.5 },
+      mb: { xs: 1, sm: 1.5 },
+      maxWidth: { xs: '100%', sm: 420, md: 480 },
       width: '100%',
       mx: 'auto',
-      my: { xs: 0.5, md: 1 },
-      boxShadow: 1,
-      borderRadius: 3,
+      boxShadow: { xs: 0.5, sm: 1 },
+      borderRadius: { xs: 1, sm: 1.5 },
       background: '#fff',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
     }}
     elevation={2}
+    component="section"
     role="form"
-    aria-label="Create a new post"
+    aria-labelledby="create-post-title"
+    aria-describedby="create-post-description"
   >
     <Typography
-      variant="h6"
+      id="create-post-title"
+      variant="body1"
+      component="h2"
       fontWeight={700}
-      mb={1.5}
+      mb={{ xs: 0.75, sm: 1 }}
       textAlign="center"
       color="#333"
-      sx={{ fontSize: { xs: '1.1rem', sm: '1.25rem' } }}
+      sx={{ 
+        fontSize: { xs: '0.875rem', sm: '0.95rem', md: '1rem' },
+        lineHeight: 1.2,
+      }}
     >
       What's on your mind?
+    </Typography>
+    <Typography
+      id="create-post-description"
+      sx={{ ...a11y.srOnly }}
+    >
+      Fill out the form below to create a new post with a title and content
     </Typography>
     <Box
       component="form"
       onSubmit={handleSubmit}
       display="flex"
       flexDirection="column"
-      gap={1.5}
+      gap={0.75}
       alignItems="stretch"
       width="100%"
-      maxWidth={520}
+      maxWidth={380}
     >
-      <Typography fontWeight={700} mb={0.5} fontSize={16} color="#333">
-        Title
+      <Typography 
+        component="label"
+        htmlFor="post-title-input"
+        fontWeight={700} 
+        mb={0.5} 
+        fontSize={{ xs: 12, sm: 13 }} 
+        color="#333"
+        sx={{ alignSelf: 'flex-start' }}
+      >
+        Title *
       </Typography>
       <TextField
+        id="post-title-input"
         placeholder="Hello world"
         value={title}
         onChange={e => setTitle(e.target.value)}
         size="small"
         fullWidth
-        inputProps={{ maxLength: 100, 'aria-label': 'Post title' }}
+        inputProps={{ 
+          maxLength: 100, 
+          'aria-describedby': 'title-help',
+          'aria-required': 'true'
+        }}
         helperText={`${title.length}/100 characters`}
-        FormHelperTextProps={{ sx: { textAlign: 'right', color: '#888' } }}
+        FormHelperTextProps={{ 
+          id: 'title-help',
+          sx: { textAlign: 'right', color: '#888', fontSize: { xs: '0.75rem', sm: '0.875rem' } } 
+        }}
         required
-        sx={{ mb: 1 }}
+        error={title.trim() === '' && title.length > 0}
+        sx={{ mb: { xs: 1, sm: 1.25 } }}
       />
-      <Typography fontWeight={700} mb={0.5} fontSize={16} color="#333">
+      <Typography fontWeight={700} mb={0.25} fontSize={13} color="#333">
         Content
       </Typography>
       <TextField

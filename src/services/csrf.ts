@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API_BASE_URL } from './api';
+import { handleError } from '../utils/errorHandler';
 
 export async function getCSRFToken(): Promise<string | null> {
   try {
@@ -12,16 +13,15 @@ export async function getCSRFToken(): Promise<string | null> {
     const match = document.cookie.match(/csrftoken=([^;]+)/);
     const token = match ? match[1] : null;
     
-    if (!token) {
+    if (!token && import.meta.env.DEV) {
       console.warn('CSRF token not found in cookies. Available cookies:', document.cookie);
     }
     
     return token;
   } catch (error) {
-    console.error('Failed to fetch CSRF token:', {
-      error,
-      url: `${API_BASE_URL}/csrf/`,
-      cookies: document.cookie
+    handleError(error, 'CSRF Token Fetch', { 
+      showAlert: false,
+      logError: true 
     });
     return null;
   }

@@ -72,9 +72,9 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
           alt="Blog Banner"
           style={{
             width: '100%',
-            maxHeight: 250,
+            maxHeight: 165,
             objectFit: 'cover',
-            borderRadius: '0 0 8px 8px',
+            borderRadius: '0 0 6px 6px',
           }}
         />
         <Box p={2} pt={2}>

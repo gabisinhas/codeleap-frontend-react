@@ -65,14 +65,16 @@ const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onL
       }}
     >
       <Paper
-        elevation={3}
+        elevation={2}
         sx={{
-          borderRadius: 2,
-          p: 4,
-          minWidth: 400,
+          borderRadius: 1,
+          p: { xs: 1.5, sm: 2 },
+          minWidth: { xs: 280, sm: 320 },
+          maxWidth: 350,
+          width: '90%',
           display: 'flex',
           flexDirection: 'column',
-          gap: 2,
+          gap: 1.25,
         }}
         component="form"
         onSubmit={formik.handleSubmit}

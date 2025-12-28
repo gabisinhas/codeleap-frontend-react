@@ -10,6 +10,8 @@ interface UserHeaderProps {
 
 const UserHeader: React.FC<UserHeaderProps> = ({ username, onLogout }) => (
   <Box
+    component="header"
+    role="banner"
     sx={{
       width: '100%',
       minWidth: 320,
@@ -17,17 +19,36 @@ const UserHeader: React.FC<UserHeaderProps> = ({ username, onLogout }) => (
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
-      pl: 0,
-      pr: 0,
-      py: 1.5,
-      borderRadius: '8px 8px 0 0',
-      boxShadow: 1,
-      minHeight: 48,
+      p: { xs: 0.75, sm: 1.25 },
+      borderRadius: '6px 6px 0 0',
+      boxShadow: 0.5,
+      minHeight: { xs: 40, sm: 44 },
       overflow: 'visible',
+      gap: { xs: 0.75, sm: 1.5 },
     }}
+    aria-label="User navigation header"
   >
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-      <Typography variant="subtitle1" sx={{ fontWeight: 500, color: '#fff', paddingLeft: 2 }}>
+    <Box 
+      sx={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        flex: 1,
+        minWidth: 0, // Allow text truncation
+      }}
+    >
+      <Typography 
+        variant="body2" 
+        component="h1"
+        sx={{ 
+          fontWeight: 500, 
+          color: '#fff',
+          fontSize: { xs: '0.75rem', sm: '0.875rem', md: '0.95rem' },
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        }}
+        aria-label={`Welcome message for user ${username}`}
+      >
         Welcome, {username}
       </Typography>
     </Box>
@@ -39,14 +60,20 @@ const UserHeader: React.FC<UserHeaderProps> = ({ username, onLogout }) => (
       sx={{
         color: '#fff',
         borderColor: '#fff',
-        minWidth: 64,
-        px: 2,
+        minWidth: { xs: 48, sm: 60 },
+        px: { xs: 1, sm: 1.5 },
+        py: { xs: 0.5, sm: 0.75 },
         fontWeight: 600,
-        fontSize: '1rem',
-        mr: 4,
+        mr: 2,
+        fontSize: { xs: '0.75rem', sm: '0.875rem' },
+        flexShrink: 0,
         '&:hover': {
           borderColor: '#b3cfff',
           background: 'rgba(255,255,255,0.08)'
+        },
+        '&:focus': {
+          outline: '2px solid white',
+          outlineOffset: '1px',
         }
       }}
     >

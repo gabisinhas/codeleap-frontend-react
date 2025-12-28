@@ -10,9 +10,9 @@ interface HeaderProps {
 
 
 const Header: React.FC<HeaderProps> = () => (
-  <AppBar position="static" sx={{ background: '#7695EC', borderRadius: '0 0 8px 8px', mb: 4, boxShadow: 3 }} elevation={0}>
-    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: 64 }}>
-      <Typography variant="h5" sx={{ fontWeight: 700, letterSpacing: 1 }}>
+  <AppBar position="static" sx={{ background: '#7695EC', borderRadius: '0 0 4px 4px', mb: 1.5, boxShadow: 1 }} elevation={0}>
+    <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: { xs: 36, sm: 40 }, py: 0.25 }}>
+      <Typography variant="body1" sx={{ fontWeight: 700, letterSpacing: 0.25, fontSize: { xs: '0.875rem', sm: '0.95rem' } }}>
         Welcome to CodeLeap Network!
       </Typography>
     </Toolbar>
