@@ -133,7 +133,15 @@ export function useAuthController() {
         user: userToStore
       };
       
-      storage.saveAuth(mockAuth);
+      storage.saveAuth({
+        ...mockAuth,
+        user: {
+          ...mockAuth.user,
+          username: mockAuth.user.username || '',
+          email: mockAuth.user.email || '',
+          name: mockAuth.user.name || '',
+        },
+      });
       setUser(userData);
     } catch (error) {
       console.error('Error during username login:', error);
