@@ -138,7 +138,14 @@ export async function registerUser(data: {
     ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
   };
 
-  return api.post('/auth/registration/', data, {
+  const registrationData = {
+    username: data.username,
+    email: data.email,
+    password1: data.password,
+    password2: data.password,
+  };
+
+  return api.post('/auth/registration/', registrationData, {
     headers,
     withCredentials: true,
     timeout: 15000,
