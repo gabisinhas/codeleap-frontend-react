@@ -31,6 +31,7 @@ export function useLoginController(
       const payload = isEmail
         ? { email: data.login, password: data.password }
         : { username: data.login, password: data.password };
+      
       const response = await loginUser(payload);
      
       if (response?.data?.access && response?.data?.refresh && response?.data?.user) {
@@ -39,10 +40,48 @@ export function useLoginController(
         localStorage.setItem('user', JSON.stringify(response.data.user));
         onLogin(data.login, data.password);
       } else {
+        console.error('Invalid response format:', response?.data);
         alert('Unexpected response format from backend.');
       }
     } catch (error: any) {
-      alert('Login error. Please check your credentials.');
+      console.error('Login error details:', error);
+      
+      let errorMessage = 'Login error. Please check your credentials.';
+      
+      if (error?.response) {
+        const status = error.response.status;
+        const responseData = error.response.data;
+        
+        if (status === 400) {
+          if (responseData?.non_field_errors) {
+            errorMessage = responseData.non_field_errors[0] || 'Invalid credentials.';
+          } else if (responseData?.detail) {
+            errorMessage = responseData.detail;
+          } else if (responseData?.message) {
+            errorMessage = responseData.message;
+          } else {
+            errorMessage = 'Invalid login data. Please check your username/email and password.';
+          }
+        } else if (status === 401) {
+          errorMessage = 'Invalid credentials. Please check your username/email and password.';
+        } else if (status === 403) {
+          errorMessage = 'Access forbidden. Your account may be inactive.';
+        } else if (status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        } else {
+          errorMessage = `Error ${status}: ${responseData?.detail || responseData?.message || 'Unknown error'}`;
+        }
+      } else if (error?.message) {
+        if (error.message.includes('Network Error') || error.message.includes('ERR_NETWORK')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.message.includes('timeout')) {
+          errorMessage = 'Request timed out. Please try again.';
+        } else {
+          errorMessage = `Connection error: ${error.message}`;
+        }
+      }
+      
+      alert(errorMessage);
     } finally {
       setIsLoading(false);
     }
@@ -54,10 +93,35 @@ export function useLoginController(
       await registerUser({
         username: data.username,
         email: data.email,
-        password1: data.password,
+        password: data.password,
       });
-      setRegisterSuccess(true);
-      setIsRegister(false);
+      
+      // Após registro bem-sucedido, fazer login automaticamente para obter tokens
+      try {
+        const loginResponse = await loginUser({
+          username: data.username,
+          password: data.password
+        });
+        
+        if (loginResponse?.data?.access && loginResponse?.data?.refresh && loginResponse?.data?.user) {
+          localStorage.setItem('access_token', loginResponse.data.access);
+          localStorage.setItem('refresh_token', loginResponse.data.refresh);
+          localStorage.setItem('user', JSON.stringify(loginResponse.data.user));
+          
+          // Fazer login na aplicação com o usuário recém-criado
+          onLogin(data.username, data.password);
+        } else {
+          // Se o login automático falhar, apenas mostrar sucesso do registro
+          setRegisterSuccess(true);
+          setIsRegister(false);
+        }
+      } catch (loginError) {
+        console.warn('Auto-login after registration failed:', loginError);
+        // Mostrar sucesso do registro mesmo se o login automático falhar
+        setRegisterSuccess(true);
+        setIsRegister(false);
+      }
+      
     } catch (error: any) {
       let message = 'Registration error. Please check the data and try again.';
       if (error?.response) {

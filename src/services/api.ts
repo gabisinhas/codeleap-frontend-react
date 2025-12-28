@@ -29,11 +29,14 @@ api.interceptors.request.use(
       config.headers['Authorization'] = `Bearer ${token}`;
     } else {
       const isAuthEndpoint = config.url?.includes('/auth/login/') || 
-                            config.url?.includes('/auth/registration/') || 
+                            config.url?.includes('/auth/registration/') ||
+                            config.url?.includes('/auth/register/') || 
                             config.url?.includes('/auth/google/') ||
                             config.url?.includes('/csrf/');
       
       if (!isAuthEndpoint) {
+        console.warn('No authentication token found for protected endpoint:', config.url);
+        console.warn('Available localStorage keys:', Object.keys(localStorage));
       }
     }
     return config;
@@ -52,6 +55,7 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
+      console.warn('401 Unauthorized - clearing authentication tokens');
       localStorage.removeItem('access_token');
       localStorage.removeItem('refresh_token');
       localStorage.removeItem('token');
@@ -61,7 +65,17 @@ api.interceptors.response.use(
     if (error.response?.headers && error.response.headers['content-type']) {
       const contentType = error.response.headers['content-type'];
       if (!contentType.includes('application/json')) {
+        console.warn('Non-JSON response received:', {
+          status: error.response.status,
+          contentType,
+          data: error.response.data
+        });
       }
+    }
+    
+    // Log authentication errors for debugging
+    if (error.response?.status === 401 && error.response?.data) {
+      console.error('Authentication error details:', error.response.data);
     }
     
     return Promise.reject(error);
@@ -91,20 +105,44 @@ export function deletePost(id: number) {
   return api.delete(`/deletepost/${id}/`);
 }
 
-export function loginUser(data: {
+export async function loginUser(data: {
   email?: string;
   username?: string;
   password: string;
 }) {
-  return api.post('/auth/login/', data);
+  const csrfToken = await getCSRFToken();
+
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+  };
+
+  return api.post('/auth/login/', data, {
+    headers,
+    withCredentials: true,
+    timeout: 15000,
+  });
 }
 
-export function registerUser(data: {
+export async function registerUser(data: {
   username: string;
   email: string;
-  password1: string;
+  password: string;
 }) {
-  return api.post('/auth/register/', data);
+  const csrfToken = await getCSRFToken();
+
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+  };
+
+  return api.post('/auth/registration/', data, {
+    headers,
+    withCredentials: true,
+    timeout: 15000,
+  });
 }
 
 import { withRetry } from '../utils/errorHandler';

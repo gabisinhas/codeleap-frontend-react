@@ -108,43 +108,42 @@ export function useAuthController() {
       return;
     }
     
+    // This function should only update the UI state after successful authentication
+    // The actual authentication tokens should already be in localStorage from handleLogin
     setIsLoading(true);
     
     try {
-      // Check if login is an email
-      const isEmail = /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(login);
+      // Get tokens from localStorage that should have been set by successful login
+      const accessToken = localStorage.getItem('access_token');
+      const refreshToken = localStorage.getItem('refresh_token');
+      const storedUser = localStorage.getItem('user');
       
-      const userData = { 
-        username: isEmail ? undefined : login.trim(),
-        email: isEmail ? login.trim() : undefined
-      };
+      if (!accessToken || !refreshToken || !storedUser) {
+        console.error('No valid authentication tokens found');
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
       
-      // Store user data for consistency
-      const userToStore = {
-        username: userData.username || userData.email || 'anonymous',
+      // Parse and validate stored user data
+      const userData = JSON.parse(storedUser);
+      
+      if (!userData || typeof userData !== 'object') {
+        console.error('Invalid stored user data');
+        setUser(null);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Update the UI state with the authenticated user
+      setUser({ 
+        username: userData.username,
         email: userData.email,
-        name: userData.username || userData.email
-      };
-      
-      // Create mock auth tokens for username login (for consistency)
-      const mockAuth = {
-        access: 'mock_access_token',
-        refresh: 'mock_refresh_token',
-        user: userToStore
-      };
-      
-      storage.saveAuth({
-        ...mockAuth,
-        user: {
-          ...mockAuth.user,
-          username: mockAuth.user.username || '',
-          email: mockAuth.user.email || '',
-          name: mockAuth.user.name || '',
-        },
+        name: userData.name || userData.username || userData.email
       });
-      setUser(userData);
+      
     } catch (error) {
-      console.error('Error during username login:', error);
+      console.error('Error during loginWithUsername:', error);
       setUser(null);
     } finally {
       setIsLoading(false);

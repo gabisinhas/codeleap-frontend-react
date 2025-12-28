@@ -111,7 +111,7 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)} disabled={saving}>Cancell</Button>
+          <Button onClick={() => setEditOpen(false)} disabled={saving}>Cancel</Button>
           <Button onClick={handleEditSave} disabled={saving || !editTitle.trim() || !editContent.trim()} variant="contained">Save</Button>
         </DialogActions>
       </Dialog>
