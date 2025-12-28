@@ -26,7 +26,7 @@ export const usePostFormController = (
       setTitle('');
       setContent('');
     } catch (err: any) {
-      const msg = err?.response?.data?.detail || 'Erro ao criar post.';
+      const msg = err?.response?.data?.detail || 'Error creating post.';
       setError(msg);
       if (onCreate) {
         onCreate(null, msg);

@@ -11,7 +11,7 @@ interface ErrorSnackbarProps {
 const ErrorSnackbar: React.FC<ErrorSnackbarProps> = ({ open, onClose, message }) => (
   <Snackbar open={open} autoHideDuration={4000} onClose={onClose} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
     <MuiAlert onClose={onClose} severity="error" sx={{ width: '100%' }} elevation={6} variant="filled">
-      {message || 'Erro ao criar post.'}
+      {message || 'Error creating post.'}
     </MuiAlert>
   </Snackbar>
 );

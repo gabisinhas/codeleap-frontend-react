@@ -11,6 +11,8 @@ import { useSortedPosts } from '../../hooks/useSortedPosts';
 import { usePaginatedPosts } from '../../hooks/usePaginatedPosts';
 import type { SortOrder } from '../../hooks/useSortedPosts';
 import type { Post } from '../PostCardCreation/types/PostForm.types';
+import SuccessSnackbar from '../common/SuccessSnackbar';
+import ErrorSnackbar from '../common/ErrorSnackbar';
 
 interface MainPageProps {
   username: string;
@@ -26,6 +28,9 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
   const [page, setPage] = useState(0);
   const [search, setSearch] = useState('');
   const [refresh, setRefresh] = useState(0);
+  const [deleteSuccessOpen, setDeleteSuccessOpen] = useState(false);
+  const [deleteErrorOpen, setDeleteErrorOpen] = useState(false);
+  const [deleteErrorMsg, setDeleteErrorMsg] = useState('');
 
   const {
     posts,
@@ -40,6 +45,19 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
     setPage(0);
   }, [pageSize]);
 
+  const handleDelete = (id: number) => {
+    setRefresh(r => r + 1);
+    if (onDelete) onDelete(id);
+  };
+
+  const handleDeleteSuccess = (message: string) => {
+    setDeleteSuccessOpen(true);
+  };
+
+  const handleDeleteError = (message: string) => {
+    setDeleteErrorMsg(message);
+    setDeleteErrorOpen(true);
+  };
 
   const handleCreate = (post: any) => {
     setRefresh(r => r + 1);
@@ -107,8 +125,10 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
               <PostCardList
                 posts={sortedPosts}
                 currentUser={username}
-                onDelete={onDelete}
+                onDelete={handleDelete}
                 onEdit={() => setRefresh(r => r + 1)}
+                onDeleteSuccess={handleDeleteSuccess}
+                onDeleteError={handleDeleteError}
               />
               {loading && (
                 <Box display="flex" justifyContent="center" my={2}>
@@ -143,6 +163,16 @@ const MainPage: React.FC<MainPageProps> = ({ username, onCreate, onDelete }) => 
           </Box>
         </Box>
       </Paper>
+      <SuccessSnackbar 
+        open={deleteSuccessOpen} 
+        onClose={() => setDeleteSuccessOpen(false)} 
+        message="Your post was deleted successfully!" 
+      />
+      <ErrorSnackbar 
+        open={deleteErrorOpen} 
+        onClose={() => setDeleteErrorOpen(false)} 
+        message={deleteErrorMsg} 
+      />
     </Box>
   );
 };

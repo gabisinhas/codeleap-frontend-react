@@ -25,17 +25,17 @@ export function useLoginController(
         ? { email: data.login, password: data.password }
         : { username: data.login, password: data.password };
       const response = await loginUser(payload);
-      console.log('Resposta do login:', response.data);
-      if (response?.data?.token) {
-        localStorage.setItem('token', response.data.token);
-      } else if (response?.data?.access) {
-        localStorage.setItem('token', response.data.access);
-      } else if (response?.data?.key) {
-        localStorage.setItem('token', response.data.key);
+     
+      if (response?.data?.access && response?.data?.refresh && response?.data?.user) {
+        localStorage.setItem('access_token', response.data.access);
+        localStorage.setItem('refresh_token', response.data.refresh);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        onLogin(data.login, data.password);
+      } else {
+        alert('Unexpected response format from backend.');
       }
-      onLogin(data.login, data.password);
     } catch (error: any) {
-      alert('Erro ao fazer login. Verifique suas credenciais.');
+      alert('Login error. Please check your credentials.');
     }
   };
 
@@ -50,9 +50,9 @@ export function useLoginController(
       setRegisterSuccess(true);
       setIsRegister(false);
     } catch (error: any) {
-      let message = 'Erro ao cadastrar. Verifique os dados e tente novamente.';
+      let message = 'Registration error. Please check the data and try again.';
       if (error?.response) {
-        message = `Erro: ${error.response.status} - ${error.response.data?.message || JSON.stringify(error.response.data)}`;
+        message = `Error: ${error.response.status} - ${error.response.data?.message || JSON.stringify(error.response.data)}`;
       } else if (error?.message) {
         message = error.message;
       }

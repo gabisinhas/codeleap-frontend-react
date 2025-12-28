@@ -36,7 +36,7 @@ const LoginView: React.FC<LoginViewProps> = ({ isRegister, handleToggleMode, onL
             .matches(passwordRegex, 'Min 8 chars, letter, number, special')
             .required('Required'),
           confirmPassword: Yup.string()
-            .oneOf([Yup.ref('password')], 'Senhas diferentes')
+            .oneOf([Yup.ref('password')], 'Passwords do not match')
             .required('Required'),
         })
       : Yup.object({

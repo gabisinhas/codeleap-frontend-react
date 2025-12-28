@@ -3,8 +3,8 @@ import React from 'react';
 import { useLoginController } from './controller/useLoginController';
 import LoginView from './view/LoginView';
 import type { LoginProps } from './types/Login.types';
-import SuccessSnackbar from '../../utils/SuccessSnackbar';
-import ErrorSnackbar from '../../utils/ErrorSnackbar';
+import SuccessSnackbar from '../common/SuccessSnackbar';
+import ErrorSnackbar from '../common/ErrorSnackbar';
 
 
 const Login: React.FC<LoginProps> = ({ onLogin, onGoogleLogin }) => {

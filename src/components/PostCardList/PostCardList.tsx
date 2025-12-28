@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Fade from '@mui/material/Fade';
+import GridLegacy from '@mui/material/GridLegacy';
 
 import PostCard from '../PostCardEdit/PostCard';
 import type { Post } from '../PostCardCreation/types/PostForm.types';
@@ -12,6 +10,8 @@ interface PostCardListProps {
   currentUser: string;
   onDelete: (id: number) => void;
   onEdit?: () => void;
+  onDeleteSuccess?: (message: string) => void;
+  onDeleteError?: (message: string) => void;
 }
 
 
@@ -23,10 +23,10 @@ import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import { updatePost } from '../../services/api';
-import SuccessSnackbar from '../../utils/SuccessSnackbar';
-import ErrorSnackbar from '../../utils/ErrorSnackbar';
+import SuccessSnackbar from '../common/SuccessSnackbar';
+import ErrorSnackbar from '../common/ErrorSnackbar';
 
-const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelete, onEdit }) => {
+const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelete, onEdit, onDeleteSuccess, onDeleteError }) => {
   const [editOpen, setEditOpen] = useState(false);
   const [editPost, setEditPost] = useState<Post | null>(null);
   const [editTitle, setEditTitle] = useState('');
@@ -52,8 +52,11 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
       setEditPost(null);
       setSuccessOpen(true);
       if (onEdit) onEdit();
-    } catch (e: any) {
-      setErrorMsg(e?.response?.data?.detail || 'Failed to edit post.');
+    } catch (error: unknown) {
+      const errorMessage = error && typeof error === 'object' && 'response' in error
+        ? (error as { response: { data: { detail: string } } })?.response?.data?.detail || 'Failed to update post.'
+        : 'Failed to update post.';
+      setErrorMsg(errorMessage);
       setErrorOpen(true);
     } finally {
       setSaving(false);
@@ -62,29 +65,29 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
 
   return (
     <>
-      <Grid container spacing={2}>
-        {posts.map(post => {
+      <GridLegacy container spacing={2}>
+        {posts.map((post) => {
           const displayDate = new Date(post.createdAt).toLocaleString();
+          
+          
           return (
-            <Box key={post.id} width="100%">
-              <Fade in timeout={600}>
-                <div>
-                  <PostCard
-                    id={post.id}
-                    title={post.title}
-                    content={post.content}
-                    username={post.username}
-                    createdAt={displayDate}
-                    currentUser={currentUser}
-                    onDelete={() => onDelete(post.id)}
-                    onEdit={() => handleEditClick(post)}
-                  />
-                </div>
-              </Fade>
-            </Box>
+              <GridLegacy item xs={12} key={post.id}>
+                <PostCard
+                  id={post.id}
+                  title={post.title}
+                  content={post.content}
+                  username={post.username}
+                  createdAt={displayDate}
+                  currentUser={currentUser}
+                  onDelete={() => onDelete(post.id)}
+                  onEdit={() => handleEditClick(post)}
+                  onDeleteSuccess={onDeleteSuccess}
+                  onDeleteError={onDeleteError}
+                />
+              </GridLegacy>
           );
         })}
-      </Grid>
+      </GridLegacy>
       <Dialog open={editOpen} onClose={() => setEditOpen(false)}>
         <DialogTitle>Editar Post</DialogTitle>
         <DialogContent>
@@ -108,11 +111,11 @@ const PostCardList: React.FC<PostCardListProps> = ({ posts, currentUser, onDelet
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setEditOpen(false)} disabled={saving}>Cancelar</Button>
+          <Button onClick={() => setEditOpen(false)} disabled={saving}>Cancell</Button>
           <Button onClick={handleEditSave} disabled={saving || !editTitle.trim() || !editContent.trim()} variant="contained">Salvar</Button>
         </DialogActions>
       </Dialog>
-      <SuccessSnackbar open={successOpen} onClose={() => setSuccessOpen(false)} message="Post updated successfully!" />
+      <SuccessSnackbar open={successOpen} onClose={() => setSuccessOpen(false)} message="Your update was completed successfully!" />
       <ErrorSnackbar open={errorOpen} onClose={() => setErrorOpen(false)} message={errorMsg} />
     </>
   );

@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import type { PostFormProps } from './types/PostForm.types';
 import { usePostFormController } from './controller/usePostFormController';
 import PostFormView from './view/PostFormView';
-import SuccessSnackbar from '../../utils/SuccessSnackbar';
-import ErrorSnackbar from '../../utils/ErrorSnackbar';
+import SuccessSnackbar from '../common/SuccessSnackbar';
+import ErrorSnackbar from '../common/ErrorSnackbar';
 
 const PostForm: React.FC<PostFormProps> = ({ currentUser, onCreate }) => {
   const [successOpen, setSuccessOpen] = useState(false);

@@ -3,22 +3,37 @@ import axios from 'axios';
 
 export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+if (!API_BASE_URL) {
+  throw new Error('API Base URL not configured');
+}
+
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
   headers: {
     'Content-Type': 'application/json',
+    'Accept': 'application/json',
   },
 });
 
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    config.headers = config.headers || {};
+    if (!config.headers['Accept']) {
+      config.headers['Accept'] = 'application/json';
+    }
+    
+    const token = localStorage.getItem('access_token') || localStorage.getItem('token');
     if (token) {
-      config.headers = config.headers || {};
       config.headers['Authorization'] = `Bearer ${token}`;
-      console.log('Enviando Authorization:', config.headers['Authorization']);
     } else {
-      console.warn('Token JWT não encontrado no localStorage. Nenhum Authorization será enviado.');
+      const isAuthEndpoint = config.url?.includes('/auth/login/') || 
+                            config.url?.includes('/auth/registration/') || 
+                            config.url?.includes('/auth/google/') ||
+                            config.url?.includes('/csrf/');
+      
+      if (!isAuthEndpoint) {
+      }
     }
     return config;
   },
@@ -26,16 +41,31 @@ api.interceptors.request.use(
 );
 
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    const contentType = response.headers['content-type'];
+    if (contentType && !contentType.includes('application/json')) {
+      console.warn('Backend did not return application/json. Content-Type:', contentType);
+      console.warn('Response data:', response.data);
+    }
+    return response;
+  },
   (error) => {
     if (error.response?.status === 401) {
+      localStorage.removeItem('access_token');
+      localStorage.removeItem('refresh_token');
       localStorage.removeItem('token');
-
+      localStorage.removeItem('user');
     }
+    
+    if (error.response?.headers && error.response.headers['content-type']) {
+      const contentType = error.response.headers['content-type'];
+      if (!contentType.includes('application/json')) {
+      }
+    }
+    
     return Promise.reject(error);
   }
 );
-
 
 export function fetchPosts() {
   return api.get('/listposts/');
@@ -53,11 +83,11 @@ export function updatePost(
   id: number,
   data: { title: string; content: string }
 ) {
-  return api.patch(`/posts/${id}/`, data);
+  return api.patch(`/editpost/${id}/`, data);
 }
 
 export function deletePost(id: number) {
-  return api.delete(`/posts/${id}/`);
+  return api.delete(`/deletepost/${id}/`);
 }
 
 export function loginUser(data: {
@@ -74,21 +104,37 @@ export function registerUser(data: {
   password1: string;
   password2: string;
 }) {
-  return api.post('/auth/registration/', data);
+  return api.post('/auth/register/', data);
 }
-
-
-
 
 export async function loginWithGoogle(googleToken: string) {
   const csrfToken = await getCSRFToken();
 
-  return api.post(
-    '/auth/google/',
-    { token: googleToken },
-    {
-      headers: csrfToken ? { 'X-CSRFToken': csrfToken } : {},
-      withCredentials: true,
-    }
-  );
+  const headers = {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    ...(csrfToken ? { 'X-CSRFToken': csrfToken } : {}),
+  };
+
+  try {
+    const response = await api.post(
+      '/auth/google/',
+      { token: googleToken },
+      {
+        headers,
+        withCredentials: true,
+        timeout: 30000,
+      }
+    );
+    
+    return response;
+  } catch (error) {
+    console.error('Google login request failed:', {
+      error: error,
+      url: `${API_BASE_URL}/auth/google/`,
+      headers,
+      tokenLength: googleToken.length
+    });
+    throw error;
+  }
 }

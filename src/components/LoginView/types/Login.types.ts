@@ -1,5 +1,5 @@
 export interface LoginProps {
-  onLogin: (username: string) => void;
+  onLogin: (login: string, password?: string) => void;
   onGoogleLogin: (googleToken: string, googleUserName?: string) => void;
 }
 
